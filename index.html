@@ -12,7 +12,6 @@
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; overflow: hidden; color: var(--text); }
         .hidden { display: none !important; }
         
-        /* Auth & Containers */
         .auth-container { max-width: 450px; margin: 40px auto; padding: 30px; background: white; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
         input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
         label { display: block; text-align: left; font-weight: bold; font-size: 0.85rem; margin-top: 10px; color: var(--primary); }
@@ -20,49 +19,46 @@
         button { cursor: pointer; border: none; border-radius: 10px; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-main { background: var(--primary); color: white; padding: 16px; width: 100%; font-size: 1rem; margin-top: 10px; }
         .btn-link { background: none; color: var(--primary); font-size: 0.9rem; text-decoration: underline; margin-top: 10px; width: 100%; }
+        
+        .header-dash { display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px 25px; border-bottom: 1px solid #ddd; z-index: 100; }
         .btn-header { color: white; padding: 6px 12px; font-size: 0.8rem; }
         .btn-voltar { background: #6c757d; }
         .btn-sair { background: var(--danger); }
 
-        /* Dashboard */
         #dashboard { height: 100vh; display: flex; flex-direction: column; }
-        .header-dash { display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px 25px; border-bottom: 1px solid #ddd; z-index: 100; }
-        .header-btns { display: flex; gap: 10px; }
-        
         .carousel-container { position: relative; flex-grow: 1; display: flex; align-items: center; overflow: hidden; background: #e9ecef; }
         .student-track { display: flex; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; height: 100%; }
-        
         .student-card { min-width: 100%; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
         .card-content { background: white; width: 100%; max-width: 500px; padding: 20px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 10px solid var(--primary); max-height: 90vh; overflow-y: auto; }
         
-        /* Foto */ 
-        .photo-container { position: relative; width: 100px; height: 100px; margin: 0 auto 10px; }
-        .photo-placeholder { width: 100%; height: 100%; background: #f0f7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 40px; border: 3px solid var(--primary); overflow: hidden; }
-        .photo-placeholder img { width: 100%; height: 100%; object-fit: cover; }
-        .btn-upload-label { position: absolute; bottom: 0; right: 0; background: var(--primary); color: white; width: 30px; height: 30px; border-radius: 50%; font-size: 18px; line-height: 30px; border: 2px solid white; cursor: pointer; text-align: center; }
+        .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: var(--primary); color: white; width: 50px; height: 50px; border-radius: 50%; z-index: 2000; border: none; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .nav-arrow:disabled { background: #ccc; cursor: not-allowed; }
+        .arrow-left { left: 15px; }
+        .arrow-right { right: 15px; }
 
-        .toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: #f8f9fa; border-radius: 10px; margin-bottom: 5px; border: 1px solid #eee; font-size: 0.9rem; }
-        .switch { position: relative; display: inline-block; width: 40px; height: 20px; }
+        .photo-container { position: relative; width: 80px; height: 80px; margin: 0 auto 10px; }
+        .photo-placeholder { width: 100%; height: 100%; background: #f0f7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; border: 3px solid var(--primary); overflow: hidden; }
+        .photo-placeholder img { width: 100%; height: 100%; object-fit: cover; }
+        .btn-upload-label { position: absolute; bottom: 0; right: 0; background: var(--primary); color: white; width: 25px; height: 25px; border-radius: 50%; font-size: 14px; line-height: 25px; cursor: pointer; text-align: center; border: 2px solid white; }
+
+        .toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: #f8f9fa; border-radius: 10px; margin-bottom: 4px; border: 1px solid #eee; font-size: 0.85rem; }
+        .toggle-destaque { background: #e8f0fe; border: 1px solid var(--primary); }
+        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--success); }
-        input:checked + .slider:before { transform: translateX(20px); }
+        input:checked + .slider:before { transform: translateX(16px); }
 
-        .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: var(--primary); color: white; width: 45px; height: 45px; border-radius: 50%; z-index: 1000; border: none; font-size: 20px; }
-        .nav-arrow:disabled { background: #bbb; cursor: not-allowed; }
-        .arrow-left { left: 10px; }
-        .arrow-right { right: 10px; }
-        
-        .btn-pdf { background: #5f6368; color: white; width: 100%; padding: 12px; margin-top: 15px; }
-        textarea { height: 50px; resize: none; font-family: inherit; }
+        .btn-pdf { background: #5f6368; color: white; width: 100%; padding: 10px; margin-top: 10px; }
+        textarea { height: 45px; resize: none; font-size: 0.85rem; }
     </style>
 </head>
 <body>
 
 <div id="tela-login" class="auth-container">
     <img src="imagem1.png" style="width: 60px; margin-bottom: 10px;">
-    <h2>FUNCIONAL 2026
+    <h2>FUNCIONAL 2026</h2>
     <input type="email" id="login-email" placeholder="E-mail">
     <input type="password" id="login-senha" placeholder="Senha">
     <button class="btn-main" onclick="acaoLogin()">🚀 ENTRAR NO SISTEMA</button>
@@ -94,13 +90,13 @@
     </select>
     <label>Selecione a Turma:</label>
     <select id="sel-turma"></select>
-    <button class="btn-main" id="btn-iniciar" onclick="iniciarConselho()">📂 ABRIR DIÁRIO DE BORDO</button>
+    <button class="btn-main" onclick="iniciarConselho()">📂 ABRIR DIÁRIO DE BORDO</button>
 </div>
 
 <div id="dashboard" class="hidden">
     <div class="header-dash">
-        <span id="info-header" style="font-weight: bold; color: var(--primary); font-size: 0.9rem;"></span>
-        <div class="header-btns">
+        <span id="info-header" style="font-weight: bold; color: var(--primary);"></span>
+        <div style="display: flex; gap: 10px;">
             <button class="btn-header btn-voltar" onclick="mostrarTela('tela-filtros')">⬅️ VOLTAR</button>
             <button class="btn-header btn-sair" onclick="location.reload()">⚠️ SAIR</button>
         </div>
@@ -113,11 +109,10 @@
 </div>
 
 <script>
-    const SUPABASE_URL = 'https://hinaavyyhoqcdycutqte.supabase.co';   // supabase da conta do Davi ..... banco de dados no bucket de fotos 
+    const SUPABASE_URL = 'https://hinaavyyhoqcdycutqte.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpbmFhdnl5aG9xY2R5Y3V0cXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNTk1OTYsImV4cCI6MjA4NzYzNTU5Nn0.ZxWugRhPj8-2nf3GrolGmwgIWlteHz4r0tkonPZiBMs';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // Relação dos alunos por tuma e turno 
     const turmasDados = {
         integral: {
             "1º A": ["ANA BEATRIZ CABRAL DA SILVA", "ANA BEATRIZ DANTAS BERNARDO", "ANA BEATRIZ OLIVEIRA SERRA", "ANA CAROLYNA CARNEIRO SOUSA", "ANA LUIZA DE SOUSA LOURENCO", "ANNA JULIA RODRIGUES DE MELO", "DEBORA IOLANDA GOMES DA SILVA", "DEVIDSON RAMOS DE OLIVEIRA", "DIOGO SANTOS FERREIRA", "FERNANDO ERLANIO DE OLIVEIRA AGUIAR", "JESSICA DEBORA SILVA OLIVEIRA", "JOAO GABRIEL SOUSA RODRIGUES", "JOAO LUCAS SOUSA DA COSTA", "JORGE MIGUEL ARAUJO LOPES", "JULIA EVELLEN PAIVA DA SILVA", "KAILANY DA SILVA COSTA", "KAROLLAINY OLIVEIRA SOUSA", "KAUA ARAUJO MENDES", "LUIS GUSTAVO COSTA FERNANDES", "LUNNA DE LIMA ABREU", "MARA LIDIA FERREIRA DE FARIAS", "MARIA ALICIA CARVALHO NUNES", "MARIA CLARA DA CRUZ SILVA", "MARIA EDUARDA BERNARDO SOUZA", "MARIA ISABEL ALVES PEREIRA", "MARYA EDUARDA DOS SANTOS LOBAO", "MOISES ARCANJO FLOR FERREIRA", "RAYSSA DA SILVA RODRIGUES", "RYAN DA SILVA COSTA", "SAMUEL SANTIAGO DE LIMA", "SAMYRA MARIA CAVALCANTE CRUZ", "THALES GABRIEL FERREIRA DE LIMA", "TIAGO TAVARES SOUZA", "YANN FERREIRA SILVA COELHO", "YASMIN SILVA COUTO"],
@@ -148,7 +143,7 @@
         const turno = document.getElementById('sel-turno').value;
         const selTurma = document.getElementById('sel-turma');
         selTurma.innerHTML = '';
-        Object.keys(turmasDados[turno]).forEach(t => selTurma.innerHTML += `<option value="${t}">${t}</option>`);
+        if(turmasDados[turno]) Object.keys(turmasDados[turno]).forEach(t => selTurma.innerHTML += `<option value="${t}">${t}</option>`);
     }
 
     async function acaoLogin() {
@@ -159,24 +154,46 @@
         else { mostrarTela('tela-filtros'); popularTurmas(); }
     }
 
-    async function recuperarSenha() {
-        const email = document.getElementById('login-email').value;
-        if(!email) { alert("Por favor, digite seu e-mail no campo acima."); return; }
-        
-        const { error } = await _supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: window.location.href.split('index.html')[0] + 'reset_password.html',
-        });
-        
-        if(error) alert("Erro: " + error.message);
-        else alert("E-mail de recuperação enviado! Verifique sua caixa de entrada.");
-    }
-
     async function acaoCriarConta() {
         const email = document.getElementById('cad-email').value;
         const password = document.getElementById('cad-senha').value;
         const { error } = await _supabase.auth.signUp({ email, password });
         if(error) alert(error.message);
-        else alert("Conta criada! Já pode fazer login.");
+        else alert("Conta criada! Verifique o e-mail.");
+    }
+
+    async function recuperarSenha() {
+        const email = document.getElementById('login-email').value;
+        if(!email) return alert("Insira o e-mail.");
+        const { error } = await _supabase.auth.resetPasswordForEmail(email);
+        if(error) alert(error.message);
+        else alert("Link enviado!");
+    }
+
+    // SINCRONIZAÇÃO DE DADOS NORMAIS (POR BIMESTRE)
+    async function sync(nome, campo, valor) {
+        const turma = document.getElementById('sel-turma').value;
+        const bimestre = document.getElementById('sel-bimestre').value;
+        await _supabase.from('conselho_classe').upsert(
+            { nome, turma, bimestre, [campo]: valor }, 
+            { onConflict: 'nome,turma,bimestre' }
+        );
+    }
+
+    // SINCRONIZAÇÃO DE FOTO GLOBAL (PARA TODOS OS BIMESTRES DO ALUNO)
+    async function syncFotoGlobal(nome, url) {
+        // Atualiza todos os registros existentes desse aluno com a nova foto
+        await _supabase.from('conselho_classe')
+            .update({ foto_url: url })
+            .eq('nome', nome);
+            
+        // Garante que o registro atual também tenha a foto (caso ainda não existisse no DB)
+        const turma = document.getElementById('sel-turma').value;
+        const bimestre = document.getElementById('sel-bimestre').value;
+        await _supabase.from('conselho_classe').upsert(
+            { nome, turma, bimestre, foto_url: url }, 
+            { onConflict: 'nome,turma,bimestre' }
+        );
     }
 
     async function iniciarConselho() {
@@ -189,15 +206,20 @@
 
         document.getElementById('info-header').innerText = `🏫 ${turma} | 📅 ${bimestre}`;
         const track = document.getElementById('student-track');
-        track.innerHTML = '🔄 Sincronizando...';
+        track.innerHTML = '🔄 Carregando...';
 
+        // Busca dados do bimestre atual
         const { data: todosDados } = await _supabase.from('conselho_classe').select('*').match({ turma, bimestre });
+        
+        // Busca TODAS as fotos cadastradas para essa turma (independente de bimestre) para garantir sincronia
+        const { data: todasFotos } = await _supabase.from('conselho_classe').select('nome, foto_url').neq('foto_url', null);
 
         let html = '';
         nomes.forEach(nome => {
             const db = todosDados?.find(d => d.nome === nome) || {};
+            // Tenta pegar a foto do bimestre, se não tiver, pega de qualquer outro bimestre do mesmo aluno
+            const fUrl = db.foto_url || todasFotos?.find(f => f.nome === nome)?.foto_url || '';
             const idSeguro = nome.replace(/\s/g, '');
-            const fUrl = db.foto_url || '';
 
             html += `
                 <div class="student-card">
@@ -210,21 +232,20 @@
                                 📷 <input type="file" class="hidden" onchange="uploadFoto('${nome}', this)">
                             </label>
                         </div>
-                        <h3 style="text-align:center; margin: 5px 0 10px;">${nome}</h3>
+                        <h3 style="text-align:center;">${nome}</h3>
                         
                         <div class="toggle-item"><span>⚠️ Infrequente</span> <label class="switch"><input type="checkbox" onchange="sync('${nome}','infrequente',this.checked)" ${db.infrequente?'checked':''}><span class="slider"></span></label></div>
                         <div class="toggle-item"><span>📉 Baixa Participação</span> <label class="switch"><input type="checkbox" onchange="sync('${nome}','participacao',this.checked)" ${db.participacao?'checked':''}><span class="slider"></span></label></div>
-                        <div class="toggle-item"><span>📚 Não entrega atividades</span> <label class="switch"><input type="checkbox" onchange="sync('${nome}','atividades',this.checked)" ${db.atividades?'checked':''}><span class="slider"></span></label></div>
+                        <div class="toggle-item"><span>📚 Sem Atividades</span> <label class="switch"><input type="checkbox" onchange="sync('${nome}','atividades',this.checked)" ${db.atividades?'checked':''}><span class="slider"></span></label></div>
                         <div class="toggle-item"><span>🚫 Indisciplina</span> <label class="switch"><input type="checkbox" onchange="sync('${nome}','disciplina',this.checked)" ${db.disciplina?'checked':''}><span class="slider"></span></label></div>
                         
-                        <label>📞 Conversa com responsável (PDT/Família):</label>
-                        <textarea placeholder="Relate o contato feito..." onblur="sync('${nome}','conversa_familia',this.value)">${db.conversa_familia || ''}</textarea>
+                        <div class="toggle-item toggle-destaque"><span>📞 Contato PDT</span> <label class="switch"><input type="checkbox" onchange="sync('${nome}','pdt_contato',this.checked)" ${db.pdt_contato?'checked':''}><span class="slider"></span></label></div>
+                        <div class="toggle-item toggle-destaque"><span>👪 Contato Família</span> <label class="switch"><input type="checkbox" onchange="sync('${nome}','familia_contato',this.checked)" ${db.familia_contato?'checked':''}><span class="slider"></span></label></div>
 
-                        <label>📝 Observação do Conselho:</label>
-                        <textarea placeholder="Pontos debatidos..." onblur="sync('${nome}','obs',this.value)">${db.obs || ''}</textarea>
-                        
-                        <label>🎯 Devolutiva/Encaminhamento:</label>
-                        <textarea placeholder="Ações a serem tomadas..." onblur="sync('${nome}','feedback',this.value)">${db.feedback || ''}</textarea>
+                        <label>📝 Observação:</label>
+                        <textarea onblur="sync('${nome}','obs',this.value)">${db.obs || ''}</textarea>
+                        <label>🎯 Encaminhamento:</label>
+                        <textarea onblur="sync('${nome}','feedback',this.value)">${db.feedback || ''}</textarea>
                         
                         <button class="btn-pdf" onclick="gerarPdfIndividual('${nome}')">📥 BAIXAR PDF COMPLETO</button>
                     </div>
@@ -237,30 +258,21 @@
         atualizarNavegacao();
     }
 
-    async function sync(nome, campo, valor) {
-        const turma = document.getElementById('sel-turma').value;
-        const bimestre = document.getElementById('sel-bimestre').value;
-        await _supabase.from('conselho_classe').upsert(
-            { nome, turma, bimestre, [campo]: valor }, 
-            { onConflict: 'nome,turma,bimestre' }
-        );
-    }
-
     async function uploadFoto(nome, input) {
         const file = input.files[0];
         if(!file) return;
         const idSeguro = nome.replace(/\s/g, '');
         const placeholder = document.getElementById(`img-${idSeguro}`);
         placeholder.innerHTML = "⏳";
+
         const fileName = `${Date.now()}_${idSeguro}.jpg`;
-
-        const { error } = await _supabase.storage.from('fotos-alunos').upload(fileName, file);
-        if (error) { alert("Erro no upload!"); placeholder.innerHTML = "👤"; return; }
-
+        await _supabase.storage.from('fotos-alunos').upload(fileName, file);
         const { data } = _supabase.storage.from('fotos-alunos').getPublicUrl(fileName);
-        const publicUrl = data.publicUrl;
-        await sync(nome, 'foto_url', publicUrl);
-        placeholder.innerHTML = `<img src="${publicUrl}" crossorigin="anonymous">`;
+        const url = data.publicUrl;
+        
+        // Salva a foto para todos os bimestres do aluno
+        await syncFotoGlobal(nome, url);
+        placeholder.innerHTML = `<img src="${url}" crossorigin="anonymous">`;
     }
 
     function moveSlide(dir) {
@@ -279,56 +291,60 @@
         const doc = new jsPDF();
         const turma = document.getElementById('sel-turma').value;
         const bimestre = document.getElementById('sel-bimestre').value;
-
+        
         const { data: d } = await _supabase.from('conselho_classe').select('*').match({ nome, turma, bimestre }).single();
 
         doc.setFillColor(26, 115, 232);
         doc.rect(0, 0, 210, 40, 'F');
         doc.setTextColor(255, 255, 255);
-        doc.setFontSize(20);
-        doc.text("EEMTI DRAGÃO DO MAR", 105, 20, {align: 'center'});
+        doc.setFontSize(22);
+        doc.text("EEMTI DRAGÃO DO MAR", 105, 18, {align: 'center'});
         doc.setFontSize(14);
-        doc.text("Relatório Individual de Conselho de Classe", 105, 30, {align: 'center'});
+        doc.text("ATA DE CONSELHO INDIVIDUAL", 105, 28, {align: 'center'});
 
         if (d?.foto_url) {
             try {
                 const img = new Image();
                 img.src = d.foto_url;
                 img.crossOrigin = "anonymous";
-                await new Promise(resolve => img.onload = resolve);
-                doc.addImage(img, 'JPEG', 160, 45, 30, 30);
-            } catch(e) { console.log("Erro na foto"); }
+                await new Promise(r => { img.onload = r; img.onerror = r; });
+                if(img.complete) doc.addImage(img, 'JPEG', 160, 45, 30, 35);
+            } catch(e) {}
         }
 
         doc.setTextColor(0);
-        doc.setFontSize(11);
-        doc.text(`ALUNO: ${nome}`, 20, 50);
-        doc.text(`TURMA: ${turma} | BIMESTRE: ${bimestre}`, 20, 58);
-        //doc.line(20, 62, 190, 62);
+        doc.setFontSize(12);
+        doc.text(`ALUNO: ${nome}`, 20, 52);
+        doc.text(`TURMA: ${turma} | BIMESTRE: ${bimestre}`, 20, 60);
+        doc.line(20, 65, 190, 65);
 
-        doc.setTextColor(26, 115, 232);
-        doc.text("SITUAÇÃO PEDAGÓGICA:", 20, 75);
-        doc.setTextColor(0);
-        doc.text(`- Infrequente: ${d?.infrequente ? 'SIM' : 'NÃO'}`, 25, 82);
-        doc.text(`- Baixa Participação: ${d?.participacao ? 'SIM' : 'NÃO'}`, 25, 88);
-        doc.text(`- Não entrega atividades: ${d?.atividades ? 'SIM' : 'NÃO'}`, 25, 94);
-        doc.text(`- Problemas disciplinares: ${d?.disciplina ? 'SIM' : 'NÃO'}`, 25, 100);
+        const simNao = (v) => v ? "SIM" : "NÃO";
+        let y = 75;
+        doc.setFont(undefined, 'bold');
+        doc.text("INDICADORES:", 20, y);
+        doc.setFont(undefined, 'normal');
+        doc.text(`- Infrequente: ${simNao(d?.infrequente)}`, 25, y+8);
+        doc.text(`- Baixa Participação: ${simNao(d?.participacao)}`, 25, y+16);
+        doc.text(`- Sem Atividades: ${simNao(d?.atividades)}`, 25, y+24);
+        doc.text(`- Indisciplina: ${simNao(d?.disciplina)}`, 25, y+32);
+        doc.text(`- Contato PDT: ${simNao(d?.pdt_contato)}`, 25, y+40);
+        doc.text(`- Contato Família: ${simNao(d?.familia_contato)}`, 25, y+48);
 
-        const sessao = (tit, txt, y) => {
-            doc.setTextColor(26, 115, 232);
-            doc.text(tit, 20, y);
-            doc.setTextColor(0);
-            const lines = doc.splitTextToSize(txt || "Não informado.", 160);
-            doc.text(lines, 20, y+7);
-            return y + (lines.length * 7) + 15;
-        };
+        y += 60;
+        doc.setFont(undefined, 'bold');
+        doc.text("OBSERVAÇÕES:", 20, y);
+        doc.setFont(undefined, 'normal');
+        const obsLines = doc.splitTextToSize(d?.obs || "Nenhuma registrada.", 170);
+        doc.text(obsLines, 20, y+8);
 
-        let curY = 115;
-        curY = sessao("CONVERSA COM RESPONSÁVEL:", d?.conversa_familia, curY);
-        curY = sessao("OBSERVAÇÕES GERAIS:", d?.obs, curY);
-        curY = sessao("DEVOLUTIVA E ENCAMINHAMENTOS:", d?.feedback, curY);
+        y += (obsLines.length * 7) + 10;
+        doc.setFont(undefined, 'bold');
+        doc.text("ENCAMINHAMENTOS:", 20, y);
+        doc.setFont(undefined, 'normal');
+        const feedLines = doc.splitTextToSize(d?.feedback || "Nenhum registrado.", 170);
+        doc.text(feedLines, 20, y+8);
 
-        doc.save(`Ata_${nome.replace(/\s/g, '_')}.pdf`);
+        doc.save(`Ata_${nome}.pdf`);
     }
 </script>
 </body>
