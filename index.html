@@ -32,14 +32,14 @@
         .card-content { background: white; width: 100%; max-width: 500px; padding: 20px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 10px solid var(--primary); max-height: 90vh; overflow-y: auto; }
         
         .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: var(--primary); color: white; width: 50px; height: 50px; border-radius: 50%; z-index: 2000; border: none; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .nav-arrow:disabled { background: #ccc; cursor: not-allowed; }
+        .nav-arrow:disabled { background: #ccc; cursor: not-allowed; opacity: 0.5; }
         .arrow-left { left: 15px; }
         .arrow-right { right: 15px; }
 
         .photo-container { position: relative; width: 80px; height: 80px; margin: 0 auto 10px; }
         .photo-placeholder { width: 100%; height: 100%; background: #f0f7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; border: 3px solid var(--primary); overflow: hidden; }
         .photo-placeholder img { width: 100%; height: 100%; object-fit: cover; }
-        .btn-upload-label { position: absolute; bottom: 0; right: 0; background: var(--primary); color: white; width: 25px; height: 25px; border-radius: 50%; font-size: 14px; line-height: 25px; cursor: pointer; text-align: center; border: 2px solid white; }
+        .btn-upload-label { position: absolute; bottom: 0; right: 0; background: var(--primary); color: white; width: 25px; height: 25px; border-radius: 50%; font-size: 14px; line-height: 25px; border: 2px solid white; cursor: pointer; text-align: center; }
 
         .toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: #f8f9fa; border-radius: 10px; margin-bottom: 4px; border: 1px solid #eee; font-size: 0.85rem; }
         .toggle-destaque { background: #e8f0fe; border: 1px solid var(--primary); }
@@ -113,6 +113,7 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpbmFhdnl5aG9xY2R5Y3V0cXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNTk1OTYsImV4cCI6MjA4NzYzNTU5Nn0.ZxWugRhPj8-2nf3GrolGmwgIWlteHz4r0tkonPZiBMs';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // DADOS DAS TURMAS (RESTAURADOS)
     const turmasDados = {
         integral: {
             "1º A": ["ANA BEATRIZ CABRAL DA SILVA", "ANA BEATRIZ DANTAS BERNARDO", "ANA BEATRIZ OLIVEIRA SERRA", "ANA CAROLYNA CARNEIRO SOUSA", "ANA LUIZA DE SOUSA LOURENCO", "ANNA JULIA RODRIGUES DE MELO", "DEBORA IOLANDA GOMES DA SILVA", "DEVIDSON RAMOS DE OLIVEIRA", "DIOGO SANTOS FERREIRA", "FERNANDO ERLANIO DE OLIVEIRA AGUIAR", "JESSICA DEBORA SILVA OLIVEIRA", "JOAO GABRIEL SOUSA RODRIGUES", "JOAO LUCAS SOUSA DA COSTA", "JORGE MIGUEL ARAUJO LOPES", "JULIA EVELLEN PAIVA DA SILVA", "KAILANY DA SILVA COSTA", "KAROLLAINY OLIVEIRA SOUSA", "KAUA ARAUJO MENDES", "LUIS GUSTAVO COSTA FERNANDES", "LUNNA DE LIMA ABREU", "MARA LIDIA FERREIRA DE FARIAS", "MARIA ALICIA CARVALHO NUNES", "MARIA CLARA DA CRUZ SILVA", "MARIA EDUARDA BERNARDO SOUZA", "MARIA ISABEL ALVES PEREIRA", "MARYA EDUARDA DOS SANTOS LOBAO", "MOISES ARCANJO FLOR FERREIRA", "RAYSSA DA SILVA RODRIGUES", "RYAN DA SILVA COSTA", "SAMUEL SANTIAGO DE LIMA", "SAMYRA MARIA CAVALCANTE CRUZ", "THALES GABRIEL FERREIRA DE LIMA", "TIAGO TAVARES SOUZA", "YANN FERREIRA SILVA COELHO", "YASMIN SILVA COUTO"],
@@ -159,18 +160,17 @@
         const password = document.getElementById('cad-senha').value;
         const { error } = await _supabase.auth.signUp({ email, password });
         if(error) alert(error.message);
-        else alert("Conta criada! Verifique o e-mail.");
+        else alert("Conta criada! Verifique seu e-mail.");
     }
 
     async function recuperarSenha() {
         const email = document.getElementById('login-email').value;
-        if(!email) return alert("Insira o e-mail.");
+        if(!email) return alert("Digite seu e-mail.");
         const { error } = await _supabase.auth.resetPasswordForEmail(email);
         if(error) alert(error.message);
         else alert("Link enviado!");
     }
 
-    // SINCRONIZAÇÃO DE DADOS NORMAIS (POR BIMESTRE)
     async function sync(nome, campo, valor) {
         const turma = document.getElementById('sel-turma').value;
         const bimestre = document.getElementById('sel-bimestre').value;
@@ -180,20 +180,12 @@
         );
     }
 
-    // SINCRONIZAÇÃO DE FOTO GLOBAL (PARA TODOS OS BIMESTRES DO ALUNO)
+    // SINCRONIZAÇÃO DE FOTO GLOBAL
     async function syncFotoGlobal(nome, url) {
-        // Atualiza todos os registros existentes desse aluno com a nova foto
-        await _supabase.from('conselho_classe')
-            .update({ foto_url: url })
-            .eq('nome', nome);
-            
-        // Garante que o registro atual também tenha a foto (caso ainda não existisse no DB)
+        await _supabase.from('conselho_classe').update({ foto_url: url }).eq('nome', nome);
         const turma = document.getElementById('sel-turma').value;
         const bimestre = document.getElementById('sel-bimestre').value;
-        await _supabase.from('conselho_classe').upsert(
-            { nome, turma, bimestre, foto_url: url }, 
-            { onConflict: 'nome,turma,bimestre' }
-        );
+        await _supabase.from('conselho_classe').upsert({ nome, turma, bimestre, foto_url: url }, { onConflict: 'nome,turma,bimestre' });
     }
 
     async function iniciarConselho() {
@@ -208,16 +200,12 @@
         const track = document.getElementById('student-track');
         track.innerHTML = '🔄 Carregando...';
 
-        // Busca dados do bimestre atual
         const { data: todosDados } = await _supabase.from('conselho_classe').select('*').match({ turma, bimestre });
-        
-        // Busca TODAS as fotos cadastradas para essa turma (independente de bimestre) para garantir sincronia
         const { data: todasFotos } = await _supabase.from('conselho_classe').select('nome, foto_url').neq('foto_url', null);
 
         let html = '';
         nomes.forEach(nome => {
             const db = todosDados?.find(d => d.nome === nome) || {};
-            // Tenta pegar a foto do bimestre, se não tiver, pega de qualquer outro bimestre do mesmo aluno
             const fUrl = db.foto_url || todasFotos?.find(f => f.nome === nome)?.foto_url || '';
             const idSeguro = nome.replace(/\s/g, '');
 
@@ -270,7 +258,6 @@
         const { data } = _supabase.storage.from('fotos-alunos').getPublicUrl(fileName);
         const url = data.publicUrl;
         
-        // Salva a foto para todos os bimestres do aluno
         await syncFotoGlobal(nome, url);
         placeholder.innerHTML = `<img src="${url}" crossorigin="anonymous">`;
     }
@@ -286,13 +273,22 @@
         document.getElementById('btn-next').disabled = (currentIndex === totalAlunos - 1);
     }
 
+    // PDF CORRIGIDO: BUSCA FOTO DE QUALQUER REGISTRO DO ALUNO
     async function gerarPdfIndividual(nome) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const turma = document.getElementById('sel-turma').value;
         const bimestre = document.getElementById('sel-bimestre').value;
         
+        // Pega dados do bimestre atual
         const { data: d } = await _supabase.from('conselho_classe').select('*').match({ nome, turma, bimestre }).single();
+        
+        // BUSCA A FOTO: Tenta o registro atual, se não tiver, busca qualquer outro registro do aluno que tenha foto
+        let fotoUrl = d?.foto_url;
+        if (!fotoUrl) {
+            const { data: fSearch } = await _supabase.from('conselho_classe').select('foto_url').eq('nome', nome).neq('foto_url', null).limit(1);
+            if (fSearch && fSearch.length > 0) fotoUrl = fSearch[0].foto_url;
+        }
 
         doc.setFillColor(26, 115, 232);
         doc.rect(0, 0, 210, 40, 'F');
@@ -302,10 +298,10 @@
         doc.setFontSize(14);
         doc.text("ATA DE CONSELHO INDIVIDUAL", 105, 28, {align: 'center'});
 
-        if (d?.foto_url) {
+        if (fotoUrl) {
             try {
                 const img = new Image();
-                img.src = d.foto_url;
+                img.src = fotoUrl;
                 img.crossOrigin = "anonymous";
                 await new Promise(r => { img.onload = r; img.onerror = r; });
                 if(img.complete) doc.addImage(img, 'JPEG', 160, 45, 30, 35);
@@ -349,3 +345,4 @@
 </script>
 </body>
 </html>
+
