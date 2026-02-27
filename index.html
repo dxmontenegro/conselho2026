@@ -65,11 +65,115 @@
         .nav-arrow:disabled{background:#ccc;cursor:not-allowed;opacity:.5;}
         .arrow-left{left:15px;}
         .arrow-right{right:15px;}
+
+        /* --- Ajustes para telas menores (celular) --- */
+        @media (max-width: 768px) {
+          body {
+            overflow: auto;
+          }
+
+          .auth-container {
+            margin: 20px 10px;
+            padding: 20px 15px;
+            border-radius: 16px;
+          }
+
+          #dashboard {
+            height: auto;
+          }
+
+          .carousel-container {
+            padding: 10px 0;
+          }
+
+          .student-card {
+            padding: 10px;
+          }
+
+          .card-content {
+            flex-direction: column;
+            max-width: 100%;
+            max-height: none;
+          }
+
+          .photo-area {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+
+          .photo-placeholder {
+            width: 120px;
+            height: 120px;
+          }
+
+          .bimestres-container {
+            width: 100%;
+          }
+
+          .header-dash {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+          }
+
+          .header-dash > div {
+            width: 100%;
+            justify-content: flex-end;
+          }
+
+          .tabs {
+            flex-wrap: wrap;
+          }
+
+          .tab-btn {
+            flex: 1 1 48%;
+            font-size: 0.8rem;
+            padding: 6px;
+          }
+
+          textarea {
+            font-size: 0.8rem;
+          }
+
+          .btn-pdf {
+            font-size: 0.85rem;
+            padding: 10px;
+          }
+
+          .nav-arrow {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+          }
+        }
+
+        @media (max-width: 420px) {
+          .card-content {
+            padding: 15px 10px;
+          }
+
+          .toggle-item {
+            font-size: 0.75rem;
+            padding: 6px 8px;
+          }
+
+          .btn-upload-label {
+            font-size: 0.75rem;
+            padding: 4px 8px;
+          }
+
+          .tab-btn {
+            flex: 1 1 48%;
+            font-size: 0.75rem;
+          }
+        }
     </style>
 </head>
 <body>
 
-<!-- LOGIN (inalterado na lógica) -->
+<!-- LOGIN (mantido) -->
 <div id="tela-login" class="auth-container">
     <img src="imagem1.png" style="width:70px;margin-bottom:10px;">
     <h2>CONSELHO DIGITAL 2026</h2>
@@ -116,12 +220,10 @@
 </div>
 
 <script>
-    // Supabase credenciais
     const SUPABASE_URL = 'https://hinaavyyhoqcdycutqte.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpbmFhdnl5aG9xY2R5Y3V0cXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNTk1OTYsImV4cCI6MjA4NzYzNTU5Nn0.ZxWugRhPj8-2nf3GrolGmwgIWlteHz4r0tkonPZiBMs';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // TODAS AS TURMAS (igual o seu original)
     const turmasDados = {
         integral: {
             "1º A": ["ANA BEATRIZ CABRAL DA SILVA", "ANA BEATRIZ DANTAS BERNARDO", "ANA BEATRIZ OLIVEIRA SERRA", "ANA CAROLYNA CARNEIRO SOUSA", "ANA LUIZA DE SOUSA LOURENCO", "ANNA JULIA RODRIGUES DE MELO", "DEBORA IOLANDA GOMES DA SILVA", "DEVIDSON RAMOS DE OLIVEIRA", "DIOGO SANTOS FERREIRA", "FERNANDO ERLANIO DE OLIVEIRA AGUIAR", "JESSICA DEBORA SILVA OLIVEIRA", "JOAO GABRIEL SOUSA RODRIGUES", "JOAO LUCAS SOUSA DA COSTA", "JORGE MIGUEL ARAUJO LOPES", "JULIA EVELLEN PAIVA DA SILVA", "KAILANY DA SILVA COSTA", "KAROLLAINY OLIVEIRA SOUSA", "KAUA ARAUJO MENDES", "LUIS GUSTAVO COSTA FERNANDES", "LUNNA DE LIMA ABREU", "MARA LIDIA FERREIRA DE FARIAS", "MARIA ALICIA CARVALHO NUNES", "MARIA CLARA DA CRUZ SILVA", "MARIA EDUARDA BERNARDO SOUZA", "MARIA ISABEL ALVES PEREIRA", "MARYA EDUARDA DOS SANTOS LOBAO", "MOISES ARCANJO FLOR FERREIRA", "RAYSSA DA SILVA RODRIGUES", "RYAN DA SILVA COSTA", "SAMUEL SANTIAGO DE LIMA", "SAMYRA MARIA CAVALCANTE CRUZ", "THALES GABRIEL FERREIRA DE LIMA", "TIAGO TAVARES SOUZA", "YANN FERREIRA SILVA COELHO", "YASMIN SILVA COUTO"],
@@ -184,7 +286,6 @@
         }
     }
 
-    // Sync por NOME + TURMA + BIMESTRE
     async function sync(nome, bimestre, campo, valor) {
         const turma = document.getElementById('sel-turma').value;
         await _supabase.from('conselho_classe').upsert(
@@ -202,7 +303,6 @@
         if (!error) {
             const { data: { publicUrl } } = _supabase.storage.from('fotos-alunos').getPublicUrl(path);
             document.getElementById(`img-${idSeguro}`).innerHTML = `<img src="${publicUrl}" crossorigin="anonymous">`;
-            // salva a mesma foto nos 4 bimestres
             for (const b of ["1º","2º","3º","4º"]) {
                 await sync(nome, b, 'foto_url', publicUrl);
             }
@@ -220,7 +320,6 @@
         const track = document.getElementById('student-track');
         track.innerHTML = '🔄 Carregando dados do servidor...';
 
-        // busca todos registros dessa turma (todos bimestres)
         const { data: todosRegistros } = await _supabase
             .from('conselho_classe')
             .select('*')
@@ -236,7 +335,6 @@
                 }
             });
 
-            // foto: se qualquer bimestre tiver foto, usa a primeira
             const fUrl = registrosAluno.find(r => r.foto_url)?.foto_url || '';
             const idSeguro = nome.replace(/\s/g, '');
 
