@@ -9,7 +9,23 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         :root { --primary:#1a73e8;--bg:#f0f2f5;--card-bg:#fff;--danger:#dc3545;--success:#28a745;--text:#3c4043; }
-        body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);margin:0;overflow:hidden;color:var(--text);}
+
+        body{
+            font-family:'Segoe UI',Tahoma,sans-serif;
+            background:var(--bg);
+            margin:0;
+            color:var(--text);
+            display:flex;
+            flex-direction:column;
+            min-height:100vh;
+        }
+
+        #app-root{
+            flex:1;
+            display:flex;
+            flex-direction:column;
+        }
+
         .hidden{display:none!important;}
 
         /* Auth & Forms */
@@ -23,7 +39,7 @@
         .btn-link{background:none;color:var(--primary);font-size:.9rem;text-decoration:underline;margin-top:10px;width:100%;}
 
         /* Dashboard Layout */
-        #dashboard{height:100vh;display:flex;flex-direction:column;}
+        #dashboard{flex:1;display:flex;flex-direction:column;}
         .header-dash{display:flex;justify-content:space-between;align-items:center;background:white;padding:10px 25px;border-bottom:1px solid #ddd;z-index:100;}
         .btn-header{color:white;padding:6px 12px;font-size:.8rem;}
         .btn-voltar{background:#6c757d;}
@@ -66,20 +82,22 @@
         .arrow-left{left:15px;}
         .arrow-right{right:15px;}
 
+        /* Rodapé fixo no fim da página */
+        footer{
+            background:#ffffff;
+            border-top:1px solid #ddd;
+            text-align:center;
+            font-size:0.75rem;
+            color:#666;
+            padding:6px 10px;
+        }
+
         /* --- Ajustes para telas menores (celular) --- */
         @media (max-width: 768px) {
-          body {
-            overflow: auto;
-          }
-
           .auth-container {
             margin: 20px 10px;
             padding: 20px 15px;
             border-radius: 16px;
-          }
-
-          #dashboard {
-            height: auto;
           }
 
           .carousel-container {
@@ -173,51 +191,57 @@
 </head>
 <body>
 
-<!-- LOGIN (mantido) -->
-<div id="tela-login" class="auth-container">
-    <img src="imagem1.png" style="width:70px;margin-bottom:10px;">
-    <h2>CONSELHO DIGITAL 2026</h2>
-    <input type="email" id="login-email" placeholder="E-mail">
-    <input type="password" id="login-senha" placeholder="Senha">
-    <button class="btn-main" onclick="acaoLogin()">🚀 ENTRAR NO SISTEMA</button>
-    <button class="btn-link" onclick="mostrarTela('tela-cadastro')">📝 Criar nova conta</button>
-    <button class="btn-link" onclick="recuperarSenha()">🔑 Esqueci minha senha</button>
-</div>
+<div id="app-root">
+    <!-- LOGIN (mantido) -->
+    <div id="tela-login" class="auth-container">
+        <img src="imagem1.png" style="width:70px;margin-bottom:10px;">
+        <h2>CONSELHO DIGITAL 2026</h2>
+        <input type="email" id="login-email" placeholder="E-mail">
+        <input type="password" id="login-senha" placeholder="Senha">
+        <button class="btn-main" onclick="acaoLogin()">🚀 ENTRAR NO SISTEMA</button>
+        <button class="btn-link" onclick="mostrarTela('tela-cadastro')">📝 Criar nova conta</button>
+        <button class="btn-link" onclick="recuperarSenha()">🔑 Esqueci minha senha</button>
+    </div>
 
-<div id="tela-cadastro" class="auth-container hidden">
-    <h2>Criar Conta</h2>
-    <input type="email" id="cad-email" placeholder="Seu e-mail">
-    <input type="password" id="cad-senha" placeholder="Senha (mín. 6 dígitos)">
-    <button class="btn-main" onclick="acaoCriarConta()">✅ FINALIZAR CADASTRO</button>
-    <button class="btn-link" onclick="mostrarTela('tela-login')">⬅️ Voltar ao Login</button>
-</div>
+    <div id="tela-cadastro" class="auth-container hidden">
+        <h2>Criar Conta</h2>
+        <input type="email" id="cad-email" placeholder="Seu e-mail">
+        <input type="password" id="cad-senha" placeholder="Senha (mín. 6 dígitos)">
+        <button class="btn-main" onclick="acaoCriarConta()">✅ FINALIZAR CADASTRO</button>
+        <button class="btn-link" onclick="mostrarTela('tela-login')">⬅️ Voltar ao Login</button>
+    </div>
 
-<div id="tela-filtros" class="auth-container hidden">
-    <h3>⚙️ Iniciar Sessão</h3>
-    <label>Turno:</label>
-    <select id="sel-turno" onchange="popularTurmas()">
-        <option value="integral">Tempo Integral</option>
-        <option value="noturno">Noturno</option>
-    </select>
-    <label>Turma:</label>
-    <select id="sel-turma"></select>
-    <button class="btn-main" onclick="iniciarConselho()">📂 ABRIR DIÁRIO DE BORDO</button>
-</div>
+    <div id="tela-filtros" class="auth-container hidden">
+        <h3>⚙️ Iniciar Sessão</h3>
+        <label>Turno:</label>
+        <select id="sel-turno" onchange="popularTurmas()">
+            <option value="integral">Tempo Integral</option>
+            <option value="noturno">Noturno</option>
+        </select>
+        <label>Turma:</label>
+        <select id="sel-turma"></select>
+        <button class="btn-main" onclick="iniciarConselho()">📂 ABRIR DIÁRIO DE BORDO</button>
+    </div>
 
-<div id="dashboard" class="hidden">
-    <div class="header-dash">
-        <span id="info-header" style="font-weight:bold;color:var(--primary);"></span>
-        <div style="display:flex;gap:10px;">
-            <button class="btn-header btn-voltar" onclick="mostrarTela('tela-filtros')">⬅️ VOLTAR</button>
-            <button class="btn-header btn-sair" onclick="location.reload()">⚠️ SAIR</button>
+    <div id="dashboard" class="hidden">
+        <div class="header-dash">
+            <span id="info-header" style="font-weight:bold;color:var(--primary);"></span>
+            <div style="display:flex;gap:10px;">
+                <button class="btn-header btn-voltar" onclick="mostrarTela('tela-filtros')">⬅️ VOLTAR</button>
+                <button class="btn-header btn-sair" onclick="location.reload()">⚠️ SAIR</button>
+            </div>
+        </div>
+        <div class="carousel-container">
+            <button class="nav-arrow arrow-left" id="btn-prev" onclick="moveSlide(-1)">❮</button>
+            <div class="student-track" id="student-track"></div>
+            <button class="nav-arrow arrow-right" id="btn-next" onclick="moveSlide(1)">❯</button>
         </div>
     </div>
-    <div class="carousel-container">
-        <button class="nav-arrow arrow-left" id="btn-prev" onclick="moveSlide(-1)">❮</button>
-        <div class="student-track" id="student-track"></div>
-        <button class="nav-arrow arrow-right" id="btn-next" onclick="moveSlide(1)">❯</button>
-    </div>
 </div>
+
+<footer>
+    DESENVOLVIDO PELA EEMTI DRAGÃO DO MAR - L.E.I. / GOVERNO DO ESTADO DO CEARÁ
+</footer>
 
 <script>
     const SUPABASE_URL = 'https://hinaavyyhoqcdycutqte.supabase.co';
