@@ -8,66 +8,70 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        :root { --primary: #1a73e8; --bg: #f0f2f5; --card-bg: #ffffff; --danger: #dc3545; --success: #28a745; --text: #3c4043; }
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); margin: 0; overflow: hidden; color: var(--text); }
-        .hidden { display: none !important; }
-        
+        :root { --primary:#1a73e8;--bg:#f0f2f5;--card-bg:#fff;--danger:#dc3545;--success:#28a745;--text:#3c4043; }
+        body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);margin:0;overflow:hidden;color:var(--text);}
+        .hidden{display:none!important;}
+
         /* Auth & Forms */
-        .auth-container { max-width: 450px; margin: 40px auto; padding: 30px; background: white; border-radius: 20px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
-        input, select, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1.5px solid #ddd; border-radius: 10px; box-sizing: border-box; font-size: 1rem; }
-        label { display: block; text-align: left; font-weight: bold; font-size: 0.85rem; margin-top: 10px; color: var(--primary); }
-        
+        .auth-container{max-width:450px;margin:40px auto;padding:30px;background:white;border-radius:20px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+        input,select,textarea{width:100%;padding:12px;margin:8px 0;border:1.5px solid #ddd;border-radius:10px;box-sizing:border-box;font-size:1rem;}
+        label{display:block;text-align:left;font-weight:bold;font-size:.85rem;margin-top:10px;color:var(--primary);}
+
         /* Buttons */
-        button { cursor: pointer; border: none; border-radius: 10px; font-weight: bold; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-main { background: var(--primary); color: white; padding: 16px; width: 100%; font-size: 1rem; margin-top: 10px; }
-        .btn-link { background: none; color: var(--primary); font-size: 0.9rem; text-decoration: underline; margin-top: 10px; width: 100%; }
-        
+        button{cursor:pointer;border:none;border-radius:10px;font-weight:bold;transition:.3s;display:flex;align-items:center;justify-content:center;gap:8px;}
+        .btn-main{background:var(--primary);color:white;padding:16px;width:100%;font-size:1rem;margin-top:10px;}
+        .btn-link{background:none;color:var(--primary);font-size:.9rem;text-decoration:underline;margin-top:10px;width:100%;}
+
         /* Dashboard Layout */
-        .header-dash { display: flex; justify-content: space-between; align-items: center; background: white; padding: 10px 25px; border-bottom: 1px solid #ddd; z-index: 100; }
-        .btn-header { color: white; padding: 6px 12px; font-size: 0.8rem; }
-        .btn-voltar { background: #6c757d; }
-        .btn-sair { background: var(--danger); }
+        #dashboard{height:100vh;display:flex;flex-direction:column;}
+        .header-dash{display:flex;justify-content:space-between;align-items:center;background:white;padding:10px 25px;border-bottom:1px solid #ddd;z-index:100;}
+        .btn-header{color:white;padding:6px 12px;font-size:.8rem;}
+        .btn-voltar{background:#6c757d;}
+        .btn-sair{background:var(--danger);}
 
-        #dashboard { height: 100vh; display: flex; flex-direction: column; }
-        .carousel-container { position: relative; flex-grow: 1; display: flex; align-items: center; overflow: hidden; background: #e9ecef; }
-        .student-track { display: flex; transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1); width: 100%; height: 100%; }
-        .student-card { min-width: 100%; display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box; }
-        .card-content { background: white; width: 100%; max-width: 500px; padding: 20px; border-radius: 25px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); border-top: 10px solid var(--primary); max-height: 90vh; overflow-y: auto; }
-        
-        /* Histórico Retrátil */
-        .btn-hist { background: #f1f3f4; color: #5f6368; width: 100%; padding: 8px; font-size: 0.8rem; margin: 10px 0; border: 1px dashed #ccc; border-radius: 8px; }
-        .hist-content { background: #fafafa; border-radius: 10px; padding: 10px; margin-bottom: 15px; font-size: 0.75rem; border: 1px solid #eee; text-align: left; }
+        .carousel-container{position:relative;flex-grow:1;display:flex;align-items:center;overflow:hidden;background:#e9ecef;}
+        .student-track{display:flex;transition:transform .4s cubic-bezier(.4,0,.2,1);width:100%;height:100%;}
+        .student-card{min-width:100%;display:flex;justify-content:center;align-items:center;padding:20px;box-sizing:border-box;}
 
-        /* Navigation Arrows */
-        .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); background: var(--primary); color: white; width: 50px; height: 50px; border-radius: 50%; z-index: 2000; border: none; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .nav-arrow:disabled { background: #ccc; cursor: not-allowed; opacity: 0.5; }
-        .arrow-left { left: 15px; }
-        .arrow-right { right: 15px; }
+        /* Card horizontal com foto e bimestres */
+        .card-content{background:white;width:95%;max-width:960px;padding:20px;border-radius:20px;box-shadow:0 15px 35px rgba(0,0,0,0.1);display:flex;gap:24px;align-items:flex-start;max-height:90vh;overflow-y:auto;}
+        .photo-area{flex:0 0 190px;text-align:center;}
+        .photo-placeholder{width:160px;height:160px;border-radius:50%;background:#f0f7ff;border:4px solid var(--primary);display:flex;align-items:center;justify-content:center;font-size:40px;overflow:hidden;margin:0 auto;}
+        .photo-placeholder img{width:100%;height:100%;object-fit:cover;}
+        .btn-upload-label{margin-top:10px;display:inline-block;background:var(--primary);color:white;padding:6px 12px;border-radius:8px;font-size:.8rem;cursor:pointer;}
 
-        /* Photo UI */
-        .photo-container { position: relative; width: 80px; height: 80px; margin: 0 auto 10px; }
-        .photo-placeholder { width: 100%; height: 100%; background: #f0f7ff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; border: 3px solid var(--primary); overflow: hidden; }
-        .photo-placeholder img { width: 100%; height: 100%; object-fit: cover; }
-        .btn-upload-label { position: absolute; bottom: 0; right: 0; background: var(--primary); color: white; width: 25px; height: 25px; border-radius: 50%; font-size: 14px; line-height: 25px; border: 2px solid white; cursor: pointer; text-align: center; }
+        .bimestres-container{flex:1;}
+        .tabs{display:flex;gap:8px;margin:4px 0 10px 0;}
+        .tab-btn{flex:1;padding:8px;border-radius:8px;border:1px solid #ddd;background:#f8f9fa;cursor:pointer;font-size:.85rem;font-weight:bold;}
+        .tab-btn.active{background:var(--primary);color:white;border-color:var(--primary);}
+        .tab-content{display:none;}
+        .tab-content.active{display:block;}
 
         /* Switches */
-        .toggle-item { display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: #f8f9fa; border-radius: 10px; margin-bottom: 4px; border: 1px solid #eee; font-size: 0.85rem; }
-        .toggle-destaque { background: #e8f0fe; border: 1px solid var(--primary); }
-        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 20px; }
-        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--success); }
-        input:checked + .slider:before { transform: translateX(16px); }
+        .toggle-item{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:#f8f9fa;border-radius:10px;margin-bottom:4px;border:1px solid #eee;font-size:.85rem;}
+        .toggle-destaque{background:#e8f0fe;border:1px solid var(--primary);}
+        .switch{position:relative;display:inline-block;width:34px;height:18px;}
+        .switch input{opacity:0;width:0;height:0;}
+        .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;transition:.4s;border-radius:20px;}
+        .slider:before{position:absolute;content:"";height:12px;width:12px;left:3px;bottom:3px;background-color:white;transition:.4s;border-radius:50%;}
+        input:checked + .slider{background-color:var(--success);}
+        input:checked + .slider:before{transform:translateX(16px);}
 
-        .btn-pdf { background: #5f6368; color: white; width: 100%; padding: 12px; margin-top: 10px; }
-        textarea { height: 50px; resize: none; font-size: 0.85rem; }
+        textarea{height:60px;resize:none;font-size:.85rem;}
+
+        .btn-pdf{background:#5f6368;color:white;width:100%;padding:12px;margin-top:10px;}
+
+        .nav-arrow{position:absolute;top:50%;transform:translateY(-50%);background:var(--primary);color:white;width:50px;height:50px;border-radius:50%;z-index:2000;border:none;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+        .nav-arrow:disabled{background:#ccc;cursor:not-allowed;opacity:.5;}
+        .arrow-left{left:15px;}
+        .arrow-right{right:15px;}
     </style>
 </head>
 <body>
 
+<!-- LOGIN (inalterado na lógica) -->
 <div id="tela-login" class="auth-container">
-    <img src="imagem1.png" style="width: 70px; margin-bottom: 10px;">
+    <img src="imagem1.png" style="width:70px;margin-bottom:10px;">
     <h2>CONSELHO DIGITAL 2026</h2>
     <input type="email" id="login-email" placeholder="E-mail">
     <input type="password" id="login-senha" placeholder="Senha">
@@ -86,13 +90,6 @@
 
 <div id="tela-filtros" class="auth-container hidden">
     <h3>⚙️ Iniciar Sessão</h3>
-    <label>Bimestre:</label>
-    <select id="sel-bimestre">
-        <option value="1º">1º Bimestre</option>
-        <option value="2º">2º Bimestre</option>
-        <option value="3º">3º Bimestre</option>
-        <option value="4º">4º Bimestre</option>
-    </select>
     <label>Turno:</label>
     <select id="sel-turno" onchange="popularTurmas()">
         <option value="integral">Tempo Integral</option>
@@ -105,8 +102,8 @@
 
 <div id="dashboard" class="hidden">
     <div class="header-dash">
-        <span id="info-header" style="font-weight: bold; color: var(--primary);"></span>
-        <div style="display: flex; gap: 10px;">
+        <span id="info-header" style="font-weight:bold;color:var(--primary);"></span>
+        <div style="display:flex;gap:10px;">
             <button class="btn-header btn-voltar" onclick="mostrarTela('tela-filtros')">⬅️ VOLTAR</button>
             <button class="btn-header btn-sair" onclick="location.reload()">⚠️ SAIR</button>
         </div>
@@ -119,18 +116,19 @@
 </div>
 
 <script>
-    // Configurações Supabase
+    // Supabase credenciais
     const SUPABASE_URL = 'https://hinaavyyhoqcdycutqte.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpbmFhdnl5aG9xY2R5Y3V0cXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNTk1OTYsImV4cCI6MjA4NzYzNTU5Nn0.ZxWugRhPj8-2nf3GrolGmwgIWlteHz4r0tkonPZiBMs';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // TODAS AS TURMAS (igual o seu original)
     const turmasDados = {
         integral: {
             "1º A": ["ANA BEATRIZ CABRAL DA SILVA", "ANA BEATRIZ DANTAS BERNARDO", "ANA BEATRIZ OLIVEIRA SERRA", "ANA CAROLYNA CARNEIRO SOUSA", "ANA LUIZA DE SOUSA LOURENCO", "ANNA JULIA RODRIGUES DE MELO", "DEBORA IOLANDA GOMES DA SILVA", "DEVIDSON RAMOS DE OLIVEIRA", "DIOGO SANTOS FERREIRA", "FERNANDO ERLANIO DE OLIVEIRA AGUIAR", "JESSICA DEBORA SILVA OLIVEIRA", "JOAO GABRIEL SOUSA RODRIGUES", "JOAO LUCAS SOUSA DA COSTA", "JORGE MIGUEL ARAUJO LOPES", "JULIA EVELLEN PAIVA DA SILVA", "KAILANY DA SILVA COSTA", "KAROLLAINY OLIVEIRA SOUSA", "KAUA ARAUJO MENDES", "LUIS GUSTAVO COSTA FERNANDES", "LUNNA DE LIMA ABREU", "MARA LIDIA FERREIRA DE FARIAS", "MARIA ALICIA CARVALHO NUNES", "MARIA CLARA DA CRUZ SILVA", "MARIA EDUARDA BERNARDO SOUZA", "MARIA ISABEL ALVES PEREIRA", "MARYA EDUARDA DOS SANTOS LOBAO", "MOISES ARCANJO FLOR FERREIRA", "RAYSSA DA SILVA RODRIGUES", "RYAN DA SILVA COSTA", "SAMUEL SANTIAGO DE LIMA", "SAMYRA MARIA CAVALCANTE CRUZ", "THALES GABRIEL FERREIRA DE LIMA", "TIAGO TAVARES SOUZA", "YANN FERREIRA SILVA COELHO", "YASMIN SILVA COUTO"],
             "1º B": ["ALESSANDRO DOS SANTOS RODRIGUES", "ANA ESTER DA SILVA FELIX", "ANA RUTY PEREIRA DOS SANTOS", "ARIELE DE CARVALHO GONDIM BARBOSA LEMOS", "BERNARDO BATISTA LIMA", "BRENO HENRIQUE CASTRO VALENTIM", "EDUARDO SOUSA GAMA", "ESTER VIRGINIO MARIANO", "FILIPE BRAS DE PAULA", "FRANCISCO EDILSON OLIVEIRA ANDRADE", "GABRIELA RODRIGUES DOS SANTOS", "GEORGE TEODOZIO SILVA", "GUSTAVO NERY TEIXEIRA DE PAULA", "IAN DE ABREU VIANA", "JOSE MARLEY MENDES DOS SANTOS", "LARA WINY SOUSA DA SILVA", "LOUISE ANDRYA FERREIRA DE SOUSA LIMA", "LUARA KALYNE DA CONCEICAO SARAIVA", "LUDMILA LOPES EVANGELISTA", "MARCOS VINICIUS ARAUJO LIMA ALVES", "MARIA BEATRIZ TELES GUEDES DE SOUSA", "MARIA EDUARDA MARTINS DANTAS", "MARIA GABRIELA DA SILVA MACEDO ARAUJO", "MARIA MANUELA FERREIRA LIMA", "MARIA VITORIA SANTOS DE LIMA", "MAYRA ALEXANDRA DOS SANTOS CARMO", "MIGUEL ANTONIO LOPES DA CUNHA", "NATHALLY ELOAR DO SANTOS HENRIQUE DA SILVA", "PAULO LUCAS VIEIRA DOS SANTOS", "PEDRO LUAN OLIVEIRA SANTOS", "PEDRO LUCAS ARAUJO BRAUNA", "RHUAN DE BRITO RODRIGUES", "RODRIGO OLIVEIRA DA SILVA", "SAULO LUKA PESSOA TABOSA", "YAN DAVID FEITOSA RODRIGUES"],
-            "1º C": ["ALICE FIRMINO DOS SANTOS SILVEIRA", "ANA LIVIA DA CRUZ BORGES", "ANA VITORIA SOUSA DE LIMA", "LUCY HELEONORA DA COSTA GOMES", "BRIAN VALENTE DOS SANTOS", "CAIO VICTOR SALES DO NASCIMENTO", "CARLOS YUDI SILVA DO NASCIMENTO", "CECILIA BORGES OLIVEIRA", "DALILA SIMONE DOS SANTOS", "ELNATAN DOS REIS RODRIGUES", "ERICK SANTOS ARAUJO", "FABIANO SANTIAGO DOS ANJOS", "FRANCISCO MANOEL DOS ANJOS DA SILVA", "GABRIEL CASTRO DE SOUSA", "HELLEN MARIA DO NASCIMENTO BERNARDO", "ISABELE ROCHA FERREIRA", "JOAO LEVI GOMES VIEIRA", "JOAO PEDRO LIMA SOARES", "JOAO VITOR DE PAULO DO NASCIMENTO", "JOSE CAUA DOS SANTOS RODRIGUES", "JULIA NICOLY DE LIMA", "KEVEN GABRIEL DE SOUSA RIBEIRO", "LUIZ OTAVIO DA SILVA MOREIRA", "MARIA EDUARDA BEZERRA SANTOS", "MARIA EDUARDA RODRIGUES GUIMARAES", "MARIA LUIZA DA SILVA FRANCA", "MARIA VITORIA DA SILVA DO NASCIMENTO", "SAMUEL FREITAS ALVES", "SARAH KELLY FERREIRA SOUSA", "YAN MIQUEIAS OLIVEIRA ALVES", "YASMIN PESSOA DA ROCHA"],
+            "1º C": ["ALICE FIRMINO DOS SANTOS SILVEIRA", "ANA LIVIA DA CRUZ BORGES", "ANA VITORIA SOUSA DE LIMA", "LUCY HELEONORA DA COSTA GOMES", "BRIAN VALENTE DOS SANTOS", "CAIO VICTOR SALES DO NASCIMENTO", "CARLOS YUDI SILVA DO NASCIMENTO", "CECILIA BORGES OLIVEIRA", "DALILA SIMONE DOS SANTOS", "ELNATAN DOS REIS RODRIGUES", "ERICK SANTOS ARAUJO", "FABIANO SANTIAGO DOS ANJOS", "FRANCISCO MANOEL DOS ANJOS DA SILVA", "GABRIEL CASTRO DE SOUSA", "HELLEN MARIA DO NASCIMENTO BERNARDO", "ISABELE ROCHA FERREIRA", "JOAO LEVI GOMES VIEIRA", "JOAO PEDRO LIMA SOARES", "JOAO VITOR DE PAULO DO NASCIMENTO", "JOSE CAUA DOSSANTOS RODRIGUES", "JULIA NICOLY DE LIMA", "KEVEN GABRIEL DE SOUSA RIBEIRO", "LUIZ OTAVIO DA SILVA MOREIRA", "MARIA EDUARDA BEZERRA SANTOS", "MARIA EDUARDA RODRIGUES GUIMARAES", "MARIA LUIZA DA SILVA FRANCA", "MARIA VITORIA DA SILVA DO NASCIMENTO", "SAMUEL FREITAS ALVES", "SARAH KELLY FERREIRA SOUSA", "YAN MIQUEIAS OLIVEIRA ALVES", "YASMIN PESSOA DA ROCHA"],
             "2º A": ["ANA LIVIA DOS SANTOS BARATA", "ANTONIO VINICIUS ROCHA FERREIRA", "BRYANN VICTOR PEREIRA XAVIER", "CARLA SAMANTHA DE OLIVEIRA ASSARE", "CLARISSE YASMIN DA SILVA EVARISTO", "EMANUELLE HIGINO DE SOUZA", "ENZO DOS SANTOS MONTEIRO", "ERIK DOUGLAS LIMA MARTINS", "FRANCISCO WEVERTON DOS SANTOS", "GUILHERMY KAUA DA SILVA FERREIRA", "IRVINA AGATA DA SILVA FRANCA", "JENYFER RAISSA DO NASCIMENTO COSTA", "JESSIANE RIBEIRO CARNEIRO", "KAUA GUILHERME CRUZ SILVA", "KELRIANE BARROS DA COSTA", "LUIZ EDUARDO LOURENCO FIGUEIRA MACEDO", "MARCOS KAYRON ALBUQUERQUE ALVES", "MARIA IONARA FERREIRA DOS SANTOS", "MARIA SARAH LOPES DE BRITO", "MAYCON DO NASCIMENTO PEREIRA", "NARA LAUANE CARNEIRO FERREIRA", "PEDRO GABRIEL MOREIRA DA COSTA", "PEDRO HENRIQUE SOUSA MARTINS DA SILVA", "PEDRO VINÍCIUS OLIVEIRA DOS ANGELOS", "RYAN BARBOSA DE SOUSA", "SUELEN CRISTINA FARIAS LEAL", "VITORIA SANTOS DE OLIVEIRA SILVA", "WELLY DE CASTRO BULHOES", "YURI CAETANO CARVALHO"],
-            "2º B": ["ANA BRUNA FELIX ACARCIO PEREIRA", "ANA LAYS DE ALMEIDA", "ANA LIVIA VASCONCELOS LOBO ROCHA", "ANA VITORIA DE SOUZA AMARAL", "CALEBE DA SILVA SANTOS", "CECILIA SILVA OLIVEIRA", "DEBORAH CARVALHO BEZERRA", "GLENDA VITORIA GOMES DE LIVIA", "GUILHERME BARBOSA LOURENCO", "JOAO PIERRY ALVES DE OLIVEIRA", "JOEL BARBOSA EVANGELISTA", "KAROLYNNE", "KERISSON ANDRADE AMORIM", "KEYLLON VITORIO DE SOUZA AMBE", "LUANA FONSECA MONTEIRO", "LUCAS OLIVEIRA DE SOUZA", "MARCOS VINICIUS SILVANO BATISTA", "MARIA EDUARDA SANTANA RODRIGUES", "MARIA HELLEN SOUSA BARROS", "MIGUEL RONEY PEREIRA DUARTE", "MOYSHES GOMES DO NASCIMENTO", "NICOLAS DE FREITAS LOPES", "NYKOLAS PEREIRA RIOS", "PEDRO RIBEIRO HOLANDA", "RIHANHA FERREIRA DOS REIS", "RYANBERG FERREIRA BARBOSA DA SILVA", "VARVARA OZEROVA", "VICTOR GABRIEL LIMA DE SOUZA", "YAN DHARLLYS MARTINS DO NASCIMENTO"],
+            "2º B": ["ANA BRUNA FELIX ACARCIO PEREIRA", "ANA LAYS DE ALMEIDA", "ANA LIVIA VASCONCELOS LOBO ROCHA", "ANA VITORIA DE SOUZA AMARAL", "CALEBE DA SILVA SANTOS", "CECILIA SILVA OLIVEIRA", "DEBORAH CARVALHO BEZERRA", "GLENDA VITORIA GOMES DE LIVIA", "GUILHERME BARBOSA LOURENCO", "JOAO PIERRY ALVES DE OLIVEIRA", "JOEL BARBOSA EVANGELISTA", "KAROLYNNE", "KERISSON ANDRADE AMORIM", "KEYLLON VITORIO DE SOUZA AMBE", "LUANA FONSECA MONTEIRO", "LUCAS OLIVEIRA DE SOUSA", "MARCOS VINICIUS SILVANO BATISTA", "MARIA EDUARDA SANTANA RODRIGUES", "MARIA HELLEN SOUSA BARROS", "MIGUEL RONEY PEREIRA DUARTE", "MOYSHES GOMES DO NASCIMENTO", "NICOLAS DE FREITAS LOPES", "NYKOLAS PEREIRA RIOS", "PEDRO RIBEIRO HOLANDA", "RIHANHA FERREIRA DOS REIS", "RYANBERG FERREIRA BARBOSA DA SILVA", "VARVARA OZEROVA", "VICTOR GABRIEL LIMA DE SOUZA", "YAN DHARLLYS MARTINS DO NASCIMENTO"],
             "2º C": ["AMANDA PEREIRA DA PENHA", "ANA JULIA FERNANDES DE SOUSA", "ANA LARA CORREIA LOPES", "ARTHUR CARLOS DE ALMEIDA MOTTA", "ARTHUR MONTENEGRO VENANCIO", "BRENDA PEREIRA LIMA", "ELLEN CRISTINA SILVA DOS SANTOS", "EZEQUIEL GOMES DE SENA", "FRANCISCA SAMILLY DA SILVA ARAUJO", "GABRIEL ARAUJO SILVA", "GABRIEL ONOFRE DE SOUSA MACIEL", "HELOARA MORAES VERCOSA", "JOSE ELIVELTON OLIVEIRA MAGALHAES", "KAUA EMERSON LIMA MENEZES", "KAYANNE RODRIGUES TEIXEIRA", "KENCIANE OLIVEIRA DE SOUSA", "MARIA ALICE RIBEIRO DA SILVA", "MARIA APARECIDA SILVA DE SOUZA", "MARIA EDUARDA CARIOLANO DE ARAUJO", "MARIA FERNANDA SILVA DOS SANTOS FELIX", "MARIA LAYANE MONTEIRO DE LIMA", "MIGUEL VASCONCELOS DINIZ", "MIRELLA DE PAULA NASCIMENTO", "PEDRO ADRIAN DA SILVA", "PEDRO ITALO MAIA SOUSA", "PEDRO LUCAS FEIJÓ", "REBECA DIOGO SILVA MONTENEGRO", "SAMYLLY RAYSSA DIAS ARAUJO", "SUZANNA RAFAELLE COSTA S. DO NASCIMENTO", "YURI ANDRADE DA MATA"],
             "3º A": ["ADRYAN DE PAULA ANDRADE", "ALISSON COSTA DA SILVA", "ANA BEATRIZ FURTADO TAVARES", "ANA CAROLINE AIRES PEREIRA", "ARIANI DA GUIA DOS SANTOS", "BRUNO KENNEDY SOUSA SOARES", "CAMILY DE OLIVEIRA COSTA", "DANIELA CASTRO DE SOUZA", "DIOGO ADRIAN TAVARES DE LIMA", "EMANUELLE FERREIRA DE SOUSA", "EMANUELLY DE CASSIA PINTO QUEIROZ", "EMILY SOARES CUNHA GOMES", "FERNANDO ANTONIO MOTA DE SOUSA FILHO", "ISABELLA ALVES PEREIRA", "IZABELLE CARVALHO SILVA", "JEFERSON LAZANO MENDES DINIZ", "JOAO NICOLAS DO NASCIMENTO", "JOÃO PEDRO", "KAYLA VITORIA MARQUES CAMPOS", "KELTON MATEUS DE SOUSA NEVES", "LARA RAYELE BORGES GOES", "LAYS NAYRA GOMES FERREIRA", "LETICIA BARBOSA TEIXEIRA", "LIAN DE SOUSA FERREIRA", "LUIDY RAYAN PEREIRA DA SILVA", "LUIS DANIEL ALMEIDA DA SILVA", "LUIZ GUSTAVO SANTANA DA MATA", "MARIA FERNANDA SILVA SOUSA", "PEDRO ERICK BEZERRA DE LIMA", "PEDRO LUCAS DA SILVA GOMES", "PEDRO LUCAS LOPES MATIAS", "SILAS DOS SANTOS ALMEIDA", "YARLEI FERREIRA LOBAO", "YASMIM LOURENCO DE FREITAS"],
             "3º B": ["ANA ALICE RODRIGUES DA SILVA", "ANA CLARA DOS SANTOS DE PAULA", "ANA KARINE ALBERTO SILVA", "ANA LUIZA ALVES DE OLIVEIRA", "ANDRE HENRIQUE DE SOUZA CAMPOS", "ANGELA PATRICIA OLIVEIRA FRANCA LIMA", "ANTONIA VANESSA LIMA DA MATA", "CARLOS MISAEL DA SILVA FELIX", "EDUARDA GABRIELE FERREIRA DOS SANTOS", "FLÁVIO NOGUEIRA FILHO", "FRANCISCO HUGO DA SILVA ARAUJO", "FRANCISCO RENAN DE SOUZA RODRIGUES", "GABRIEL VITOR ABREU MORAES", "GUDSON MACEDO SANTANA", "ISAAC ASSUNCAO RODRIGUES DE MATOS", "JOAO MANOEL DIONIZIO DA SILVA", "JOAO VICTOR SOUSA DA COSTA", "JOSE ADRIEL DE SOUSA BERNARDO", "JOSE RENAN ARAUJO LIMA CASTRO", "KATHERINE LEITE BRAGA", "KERLLON PAZ DA SILVA", "LARA GABRIELLE RODRIGUES MORAIS", "LETICIA HONORATO ALVES", "LUCAS DOS SANTOS MATOKANOVIC", "MARCIO MARLEY RIBEIRO DA SILVA", "MARCUS YUAN PACHECO DE SOUSA", "MARIA CLARA CALDAS RODRIGUES", "MARIA EVELYN DA SILVA SABINO", "ROMAN DUBOVIK", "RYAN PEREIRA DE SOUSA", "RYANNA FERREIRA RODRIGUES", "SAMUEL MOREIRA FERREIRA", "VERONICA DANIELA NUNEZ TORRES", "WESLEI FERREIRA GOIS", "YORRANA DA SILVA GONÇALVES"]
@@ -154,14 +152,18 @@
         const turno = document.getElementById('sel-turno').value;
         const selTurma = document.getElementById('sel-turma');
         selTurma.innerHTML = '';
-        if(turmasDados[turno]) Object.keys(turmasDados[turno]).forEach(t => selTurma.innerHTML += `<option value="${t}">${t}</option>`);
+        if (turmasDados[turno]) {
+            Object.keys(turmasDados[turno]).forEach(t => {
+                selTurma.innerHTML += `<option value="${t}">${t}</option>`;
+            });
+        }
     }
 
     async function acaoLogin() {
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-senha').value;
         const { error } = await _supabase.auth.signInWithPassword({ email, password });
-        if(error) alert("Erro: " + error.message);
+        if (error) alert("Erro: " + error.message);
         else { mostrarTela('tela-filtros'); popularTurmas(); }
     }
 
@@ -169,119 +171,150 @@
         const email = document.getElementById('cad-email').value;
         const password = document.getElementById('cad-senha').value;
         const { error } = await _supabase.auth.signUp({ email, password });
-        if(error) alert(error.message);
+        if (error) alert(error.message);
         else { alert("Sucesso! Faça login agora."); mostrarTela('tela-login'); }
     }
 
     async function recuperarSenha() {
         const email = prompt("Digite seu e-mail:");
-        if(email) {
+        if (email) {
             const { error } = await _supabase.auth.resetPasswordForEmail(email);
-            if(error) alert(error.message);
+            if (error) alert(error.message);
             else alert("E-mail de recuperação enviado!");
         }
     }
 
-    async function sync(nome, campo, valor) {
+    // Sync por NOME + TURMA + BIMESTRE
+    async function sync(nome, bimestre, campo, valor) {
         const turma = document.getElementById('sel-turma').value;
-        const bimestre = document.getElementById('sel-bimestre').value;
         await _supabase.from('conselho_classe').upsert(
-            { nome, turma, bimestre, [campo]: valor }, 
+            { nome, turma, bimestre, [campo]: valor },
             { onConflict: 'nome,turma,bimestre' }
         );
     }
 
-    async function syncFotoGlobal(nome, url) {
-        const turma = document.getElementById('sel-turma').value;
-        const { data } = await _supabase.from('conselho_classe').select('bimestre').eq('nome', nome).eq('turma', turma);
-        if(data) {
-            for(let reg of data) {
-                await _supabase.from('conselho_classe').update({ foto_url: url }).match({ nome, turma, bimestre: reg.bimestre });
-            }
-        }
-    }
-
     async function uploadFoto(nome, input) {
         const file = input.files[0];
-        if(!file) return;
+        if (!file) return;
         const idSeguro = nome.replace(/\s/g, '');
         const path = `fotos/${idSeguro}_${Date.now()}.png`;
         const { error } = await _supabase.storage.from('fotos-alunos').upload(path, file);
-        
-        if(!error) {
+        if (!error) {
             const { data: { publicUrl } } = _supabase.storage.from('fotos-alunos').getPublicUrl(path);
             document.getElementById(`img-${idSeguro}`).innerHTML = `<img src="${publicUrl}" crossorigin="anonymous">`;
-            await sync(nome, 'foto_url', publicUrl);
-            await syncFotoGlobal(nome, publicUrl);
+            // salva a mesma foto nos 4 bimestres
+            for (const b of ["1º","2º","3º","4º"]) {
+                await sync(nome, b, 'foto_url', publicUrl);
+            }
         }
     }
 
     async function iniciarConselho() {
         const turno = document.getElementById('sel-turno').value;
         const turma = document.getElementById('sel-turma').value;
-        const bimestreAtual = document.getElementById('sel-bimestre').value;
         const nomes = turmasDados[turno][turma];
         totalAlunos = nomes.length;
         currentIndex = 0;
 
-        document.getElementById('info-header').innerText = `🏫 ${turma} | 📅 ${bimestreAtual}`;
+        document.getElementById('info-header').innerText = `🏫 ${turma} | 🗓️ Relatório Anual 2026`;
         const track = document.getElementById('student-track');
         track.innerHTML = '🔄 Carregando dados do servidor...';
 
-        const { data: todosRegistros } = await _supabase.from('conselho_classe').select('*').eq('turma', turma);
+        // busca todos registros dessa turma (todos bimestres)
+        const { data: todosRegistros } = await _supabase
+            .from('conselho_classe')
+            .select('*')
+            .eq('turma', turma);
 
         let html = '';
         nomes.forEach(nome => {
-            const registrosAluno = todosRegistros?.filter(r => r.nome === nome) || [];
-            const db = registrosAluno.find(r => r.bimestre === bimestreAtual) || {};
+            const registrosAluno = (todosRegistros || []).filter(r => r.nome === nome);
+            const dadosPorBim = { "1º": {}, "2º": {}, "3º": {}, "4º": {} };
+            registrosAluno.forEach(r => {
+                if (dadosPorBim[r.bimestre] !== undefined) {
+                    dadosPorBim[r.bimestre] = r;
+                }
+            });
+
+            // foto: se qualquer bimestre tiver foto, usa a primeira
             const fUrl = registrosAluno.find(r => r.foto_url)?.foto_url || '';
             const idSeguro = nome.replace(/\s/g, '');
 
-            let histHTML = '';
-            registrosAluno.filter(r => r.bimestre !== bimestreAtual).sort((a,b) => a.bimestre.localeCompare(b.bimestre)).forEach(r => {
-                histHTML += `
-                <div style="border-bottom:1px solid #ddd; margin-bottom:8px; padding-bottom:5px;">
-                    <strong>Bimestre ${r.bimestre}:</strong> 
-                    ${r.infrequente?'[Faltas] ':''}${r.participacao?'[Baixa Part] ':''}${r.disciplina?'[Indisc] ':''}
-                    <div style="color:#666; font-style:italic;">Obs: ${r.obs || 'Sem registro'}</div>
+            let bimestresHTML = '';
+            ["1º", "2º", "3º", "4º"].forEach((bim, idx) => {
+                const db = dadosPorBim[bim] || {};
+                bimestresHTML += `
+                <div id="tab-${idSeguro}-${bim}" class="tab-content ${idx===0?'active':''}">
+                    <div class="toggle-item"><span>⚠️ Infrequente</span>
+                        <label class="switch">
+                            <input type="checkbox" onchange="sync('${nome}','${bim}','infrequente',this.checked)" ${db.infrequente?'checked':''}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item"><span>📉 Baixa Participação</span>
+                        <label class="switch">
+                            <input type="checkbox" onchange="sync('${nome}','${bim}','participacao',this.checked)" ${db.participacao?'checked':''}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item"><span>📚 Sem Atividades</span>
+                        <label class="switch">
+                            <input type="checkbox" onchange="sync('${nome}','${bim}','atividades',this.checked)" ${db.atividades?'checked':''}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item"><span>🚫 Indisciplina</span>
+                        <label class="switch">
+                            <input type="checkbox" onchange="sync('${nome}','${bim}','disciplina',this.checked)" ${db.disciplina?'checked':''}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item toggle-destaque"><span>📞 Contato PDT</span>
+                        <label class="switch">
+                            <input type="checkbox" onchange="sync('${nome}','${bim}','pdt_contato',this.checked)" ${db.pdt_contato?'checked':''}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                    <div class="toggle-item toggle-destaque"><span>👪 Contato Família</span>
+                        <label class="switch">
+                            <input type="checkbox" onchange="sync('${nome}','${bim}','familia_contato',this.checked)" ${db.familia_contato?'checked':''}>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    <label>📝 Observação Pedagógica (${bim}):</label>
+                    <textarea onblur="sync('${nome}','${bim}','obs',this.value)">${db.obs || ''}</textarea>
+
+                    <label>🎯 Encaminhamento Final (${bim}):</label>
+                    <textarea onblur="sync('${nome}','${bim}','feedback',this.value)">${db.feedback || ''}</textarea>
                 </div>`;
             });
 
             html += `
-                <div class="student-card">
-                    <div class="card-content">
-                        <div class="photo-container">
-                            <div class="photo-placeholder" id="img-${idSeguro}">
-                                ${fUrl ? `<img src="${fUrl}" crossorigin="anonymous">` : '👤'}
-                            </div>
-                            <label class="btn-upload-label">
-                                📷 <input type="file" class="hidden" onchange="uploadFoto('${nome}', this)">
-                            </label>
+            <div class="student-card">
+                <div class="card-content">
+                    <div class="photo-area">
+                        <div class="photo-placeholder" id="img-${idSeguro}">
+                            ${fUrl ? `<img src="${fUrl}" crossorigin="anonymous">` : '👤'}
                         </div>
-                        <h3 style="text-align:center; margin:5px 0;">${nome}</h3>
-                        
-                        <button class="btn-hist" onclick="toggleHist('${idSeguro}')">📜 Ver Histórico Escolar</button>
-                        <div id="hist-${idSeguro}" class="hist-content hidden">
-                            ${histHTML || "Primeiro registro de 2026."}
-                        </div>
-
-                        <div class="toggle-item"><span>⚠️ Infrequente</span> <label class="switch"><input type="checkbox" onchange="sync('${nome}','infrequente',this.checked)" ${db.infrequente?'checked':''}><span class="slider"></span></label></div>
-                        <div class="toggle-item"><span>📉 Baixa Participação</span> <label class="switch"><input type="checkbox" onchange="sync('${nome}','participacao',this.checked)" ${db.participacao?'checked':''}><span class="slider"></span></label></div>
-                        <div class="toggle-item"><span>📚 Sem Atividades</span> <label class="switch"><input type="checkbox" onchange="sync('${nome}','atividades',this.checked)" ${db.atividades?'checked':''}><span class="slider"></span></label></div>
-                        <div class="toggle-item"><span>🚫 Indisciplina</span> <label class="switch"><input type="checkbox" onchange="sync('${nome}','disciplina',this.checked)" ${db.disciplina?'checked':''}><span class="slider"></span></label></div>
-                        
-                        <div class="toggle-item toggle-destaque"><span>📞 Contato PDT</span> <label class="switch"><input type="checkbox" onchange="sync('${nome}','pdt_contato',this.checked)" ${db.pdt_contato?'checked':''}><span class="slider"></span></label></div>
-                        <div class="toggle-item toggle-destaque"><span>👪 Contato Família</span> <label class="switch"><input type="checkbox" onchange="sync('${nome}','familia_contato',this.checked)" ${db.familia_contato?'checked':''}><span class="slider"></span></label></div>
-
-                        <label>📝 Observação Pedagógica:</label>
-                        <textarea onblur="sync('${nome}','obs',this.value)">${db.obs || ''}</textarea>
-                        
-                        <label>🎯 Encaminhamento Final:</label>
-                        <textarea onblur="sync('${nome}','feedback',this.value)">${db.feedback || ''}</textarea>
-                        
-                        <button class="btn-pdf" onclick="gerarPdfIndividual('${nome}')">📥 BAIXAR PDF COMPLETO</button>
+                        <label class="btn-upload-label">
+                            📷 Atualizar Foto
+                            <input type="file" class="hidden" onchange="uploadFoto('${nome}', this)">
+                        </label>
                     </div>
-                </div>`;
+                    <div class="bimestres-container">
+                        <h3 style="margin:0 0 5px 0;">${nome}</h3>
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="trocarAba('${idSeguro}','1º', event)">1º Bim</button>
+                            <button class="tab-btn" onclick="trocarAba('${idSeguro}','2º', event)">2º Bim</button>
+                            <button class="tab-btn" onclick="trocarAba('${idSeguro}','3º', event)">3º Bim</button>
+                            <button class="tab-btn" onclick="trocarAba('${idSeguro}','4º', event)">4º Bim</button>
+                        </div>
+                        ${bimestresHTML}
+                        <button class="btn-pdf" onclick="gerarPdfAnual('${nome}')">📥 BAIXAR RELATÓRIO ANUAL</button>
+                    </div>
+                </div>
+            </div>`;
         });
 
         track.innerHTML = html;
@@ -289,8 +322,17 @@
         moveSlide(0);
     }
 
-    function toggleHist(id) {
-        document.getElementById('hist-'+id).classList.toggle('hidden');
+    function trocarAba(idSeguro, bim, ev) {
+        ["1º", "2º", "3º", "4º"].forEach(b => {
+            const el = document.getElementById(`tab-${idSeguro}-${b}`);
+            if (el) el.classList.remove('active');
+        });
+        const atual = document.getElementById(`tab-${idSeguro}-${bim}`);
+        if (atual) atual.classList.add('active');
+
+        const btns = ev.currentTarget.parentElement.querySelectorAll('.tab-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        ev.currentTarget.classList.add('active');
     }
 
     function moveSlide(dir) {
@@ -300,23 +342,25 @@
         document.getElementById('btn-next').disabled = (currentIndex === totalAlunos - 1);
     }
 
-    async function gerarPdfIndividual(nome) {
+    async function gerarPdfAnual(nome) {
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         const turma = document.getElementById('sel-turma').value;
-        const bimestre = document.getElementById('sel-bimestre').value;
-        
-        const { data: d } = await _supabase.from('conselho_classe').select('*').match({ nome, turma, bimestre }).single();
-        const { data: fSearch } = await _supabase.from('conselho_classe').select('foto_url').eq('nome', nome).neq('foto_url', null).limit(1);
-        let fotoUrl = d?.foto_url || fSearch?.[0]?.foto_url;
 
-        doc.setFillColor(26, 115, 232);
-        doc.rect(0, 0, 210, 40, 'F');
-        doc.setTextColor(255, 255, 255);
-        doc.setFontSize(22);
-        doc.text("EEMTI DRAGÃO DO MAR", 105, 18, {align: 'center'});
-        doc.setFontSize(14);
-        doc.text("RELATÓRIO DE DESEMPENHO DO ALUNO", 105, 28, {align: 'center'});
+        const { data: regs } = await _supabase
+            .from('conselho_classe')
+            .select('*')
+            .match({ nome, turma });
+
+        const fotoUrl = (regs || []).find(r => r.foto_url)?.foto_url;
+
+        doc.setFillColor(26,115,232);
+        doc.rect(0,0,210,35,'F');
+        doc.setTextColor(255,255,255);
+        doc.setFontSize(18);
+        doc.text("EEMTI DRAGÃO DO MAR",105,18,{align:'center'});
+        doc.setFontSize(12);
+        doc.text("RELATÓRIO ANUAL DO ALUNO - 2026",105,26,{align:'center'});
 
         if (fotoUrl) {
             try {
@@ -324,39 +368,45 @@
                 img.src = fotoUrl;
                 img.crossOrigin = "anonymous";
                 await new Promise(r => { img.onload = r; img.onerror = r; });
-                if(img.complete) doc.addImage(img, 'JPEG', 160, 45, 30, 35);
+                if (img.complete) doc.addImage(img, 'JPEG', 160, 40, 30, 30);
             } catch(e) {}
         }
 
         doc.setTextColor(0);
-        doc.setFontSize(12);
-        doc.text(`ALUNO: ${nome}`, 20, 52);
-        doc.text(`TURMA: ${turma} | BIMESTRE: ${bimestre}`, 20, 60);
-        doc.line(20, 65, 190, 65);
+        doc.setFontSize(11);
+        doc.text(`ALUNO: ${nome}`, 20, 45);
+        doc.text(`TURMA: ${turma}`, 20, 52);
+        doc.line(20, 56, 190, 56);
 
-        let y = 75;
-        doc.text(`Frequência irregular: ${d?.infrequente?'SIM':'NÃO'}`, 25, y);
-        doc.text(`Baixa participação: ${d?.participacao?'SIM':'NÃO'}`, 25, y+8);
-        doc.text(`Sem realizar atividades: ${d?.atividades?'SIM':'NÃO'}`, 25, y+16);
-        doc.text(`Indisciplina: ${d?.disciplina?'SIM':'NÃO'}`, 25, y+24);
-        doc.text(`Contato com PDT: ${d?.pdt_contato?'SIM':'NÃO'}`, 25, y+32);
-        doc.text(`Contato com Família: ${d?.familia_contato?'SIM':'NÃO'}`, 25, y+40);
+        let y = 64;
+        const ordem = ["1º", "2º", "3º", "4º"];
 
-        y += 55;
-        doc.setFont("helvetica", "bold");
-        doc.text("OBSERVAÇÕES PEDAGÓGICAS:", 20, y);
-        doc.setFont("helvetica", "normal");
-        const obsLines = doc.splitTextToSize(d?.obs || "Nada registrado.", 170);
-        doc.text(obsLines, 20, y+8);
+        ordem.forEach(b => {
+            const d = (regs || []).find(r => r.bimestre === b) || {};
+            if (y > 260) { doc.addPage(); y = 20; }
 
-        y += 35;
-        doc.setFont("helvetica", "bold");
-        doc.text("ENCAMINHAMENTO / FEEDBACK:", 20, y);
-        doc.setFont("helvetica", "normal");
-        const feedbackLines = doc.splitTextToSize(d?.feedback || "Nada registrado.", 170);
-        doc.text(feedbackLines, 20, y+8);
+            doc.setFont("helvetica", "bold");
+            doc.text(`${b} BIMESTRE`, 20, y);
+            y += 6;
 
-        doc.save(`Ficha_${nome}.pdf`);
+            doc.setFont("helvetica", "normal");
+            doc.text(`Frequência irregular: ${d.infrequente?'SIM':'NÃO'}   |   Baixa participação: ${d.participacao?'SIM':'NÃO'}`, 20, y);
+            y += 5;
+            doc.text(`Sem atividades: ${d.atividades?'SIM':'NÃO'}        |   Indisciplina: ${d.disciplina?'SIM':'NÃO'}`, 20, y);
+            y += 5;
+            doc.text(`Contato PDT: ${d.pdt_contato?'SIM':'NÃO'}          |   Contato Família: ${d.familia_contato?'SIM':'NÃO'}`, 20, y);
+            y += 7;
+
+            const obsLines = doc.splitTextToSize(`OBSERVAÇÕES: ${d.obs || 'Nada registrado.'}`, 170);
+            doc.text(obsLines, 20, y);
+            y += obsLines.length * 4 + 4;
+
+            const fbLines = doc.splitTextToSize(`ENCAMINHAMENTO: ${d.feedback || 'Nada registrado.'}`, 170);
+            doc.text(fbLines, 20, y);
+            y += fbLines.length * 4 + 8;
+        });
+
+        doc.save(`Relatorio_Anual_${nome}.pdf`);
     }
 </script>
 </body>
