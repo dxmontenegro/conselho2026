@@ -343,17 +343,61 @@ btn.disabled=false;
         document.getElementById('btn-next').disabled = (currentIndex === totalAlunos - 1);
     }
 
-    async function uploadFoto(nome, input) {
-        const file = input.files[0];
-        if(!file) return;
-        const idSeguro = nome.replace(/\\s/g, '');
-        const path = `fotos/${idSeguro}_${Date.now()}.png`;
-        const { error } = await _supabase.storage.from('fotos-alunos').upload(path, file);
-        if(!error) {
-            const { data } = _supabase.storage.from('fotos-alunos').getPublicUrl(path);
-            document.getElementById(`img-${idSeguro}`).innerHTML = `<img src="${data.publicUrl}" crossorigin="anonymous">`;
-        }
+async function uploadFoto(nome, input) {
+    const file = input.files[0];
+    if(!file) return;
+
+    const idSeguro = nome
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s/g, "")
+        .replace(/[^a-zA-Z0-9]/g, "");
+
+    const path = `fotos/${idSeguro}_${Date.now()}.png`;
+
+    const { error } = await _supabase.storage
+        .from('fotos-alunos')
+        .upload(path, file);
+
+    if(error){
+        alert("Erro: " + error.message);
+        return;
     }
+
+    const { data } = _supabase.storage
+        .from('fotos-alunos')
+        .getPublicUrl(path);
+
+    const url = data.publicUrl;
+
+    // 🔥 salva no banco
+    await _supabase.from('conselho_classe').upsert({
+        nome: nome,
+        turma: document.getElementById('sel-turma').value,
+        bimestre: "1º",
+        foto_url: url
+    }, {
+        onConflict: 'nome,turma,bimestre'
+    });
+     
+    const el = input.closest('.photo-area').querySelector('.photo-placeholder');
+
+console.log("ID:", `img-${idSeguro}`);
+console.log("Elemento encontrado:", el);
+
+if(!el){
+  alert("ERRO: elemento da imagem NÃO encontrado");
+  return;
+}
+
+el.innerHTML = `
+  <img src="${url}" 
+       style="width:150px;border:3px solid red" 
+       onerror="alert('erro ao carregar imagem')"
+  >
+`;
+
+}
 
   async function gerarPdfAnual(nome){
 
@@ -589,4 +633,3 @@ alert("Se o e-mail existir, você receberá instruções para redefinir a senha.
 function acaoSair() { location.reload(); }
 </script>
 </body>
-</html>
