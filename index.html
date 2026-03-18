@@ -270,7 +270,11 @@ btn.disabled=true;
             const dadosPorBim = {"1º":{},"2º":{},"3º":{},"4º":{}};
             registrosAluno.forEach(r => { if(dadosPorBim[r.bimestre]) dadosPorBim[r.bimestre] = r; });
             const fUrl = registrosAluno.find(r => r.foto_url)?.foto_url || '';
-            const idSeguro = nome.replace(/\\s/g, '');
+            const idSeguro = nome
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .replace(/\s/g, "")
+  .replace(/[^a-zA-Z0-9]/g, "");
 
             let bimestresHTML = '';
             ["1º","2º","3º","4º"].forEach((bim, idx) => {
@@ -371,14 +375,11 @@ async function uploadFoto(nome, input) {
     const url = data.publicUrl;
 
     // 🔥 salva no banco
-    await _supabase.from('conselho_classe').upsert({
-        nome: nome,
-        turma: document.getElementById('sel-turma').value,
-        bimestre: "1º",
-        foto_url: url
-    }, {
-        onConflict: 'nome,turma,bimestre'
-    });
+  await _supabase
+  .from('conselho_classe')
+  .update({ foto_url: url })
+  .eq('nome', nome)
+  .eq('turma', document.getElementById('sel-turma').value);
      
     const el = input.closest('.photo-area').querySelector('.photo-placeholder');
 
