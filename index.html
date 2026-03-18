@@ -64,7 +64,7 @@
         input:checked + .slider:before{transform:translateX(16px);}
         textarea{height:60px;resize:none;font-size:.85rem;}
         .btn-pdf{background:#5f6368;color:white;width:100%;padding:12px;margin-top:10px;}
-        .nav-arrow{position:absolute;top:20%;transform:translateY(-50%);background:var(--primary);color:white;width:50px;height:50px;border-radius:50%;z-index:2000;border:none;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+        .nav-arrow{position:absolute;top:25%;transform:translateY(-50%);background:var(--primary);color:white;width:50px;height:50px;border-radius:50%;z-index:2000;border:none;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
         .nav-arrow:disabled{background:#ccc;cursor:not-allowed;opacity:.5;}
         .arrow-left{left:15px;}
         .arrow-right{right:15px;}
@@ -125,6 +125,27 @@
     const SUPABASE_CONSELHO_URL = 'https://hinaavyyhoqcdycutqte.supabase.co';
     const SUPABASE_CONSELHO_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpbmFhdnl5aG9xY2R5Y3V0cXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNTk1OTYsImV4cCI6MjA4NzYzNTU5Nn0.ZxWugRhPj8-2nf3GrolGmwgIWlteHz4r0tkonPZiBMs';
     const _supabase = supabase.createClient(SUPABASE_CONSELHO_URL, SUPABASE_CONSELHO_KEY);
+    const emailsAutorizados = [
+  "breno.marques@prof.ce.gov.br",
+  "monte.eng@gmail.com",
+  "eem.dragao.mar@gmail.com"
+];
+
+let emailUsuario = '';
+
+async function carregarUsuario(){
+  const { data } = await _supabase.auth.getUser();
+  emailUsuario = data?.user?.email || '';
+}
+
+function podeEditar(){
+  return emailsAutorizados.includes(emailUsuario);
+}
+
+// carrega usuário ao entrar
+window.addEventListener('load', async () => {
+  await carregarUsuario();
+});
 
     const SUPABASE_OCORR_URL = 'https://mspucfzsdpejwnhmwwmk.supabase.co';
     const SUPABASE_OCORR_KEY = 'sb_publishable_E6S5Xx028e1ue_4EQsj6qA_tBilAr8R';
@@ -361,6 +382,10 @@ btn.disabled=false;
     }
 
 async function uploadFoto(nome, input) {
+    if(!podeEditar()){
+  alert("EEMTI DRAGÃO DO MAR\n\nSomente e-mails da gestão tem credenciais para inserir, alterar, remover dados!\n\nSeu login não permite fazer alterações nessa plataforma, apenas visualizar!");
+  return;
+}
     const file = input.files[0];
     if(!file) return;
 
