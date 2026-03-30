@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conselho Digital - EEMTI Dragão do Mar</title>
+    <link rel="icon" type="image/png" href="imagem1.png">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root { 
+            --primary:#1a73e8;--bg:#f0f2f5;--card-bg:#fff;--danger:#dc3545;--success:#28a745;--warning:#ffc107;--text:#3c4043;--ocorrencias-bg:#fff8e1;--ocorrencias-border:#ffb300;
+        }
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;min-height:100vh;}
+        #app-root{flex:1;display:flex;flex-direction:column;}
+        .hidden{display:none!important;}
+        .loading{padding:40px;text-align:center;color:var(--primary);}
+        .auth-container{max-width:450px;margin:40px auto;padding:30px;background:white;border-radius:20px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,0.1);}
+        input,select,textarea{width:100%;padding:12px;margin:8px 0;border:1.5px solid #ddd;border-radius:10px;box-sizing:border-box;font-size:1rem;}
+        label{display:block;text-align:left;font-weight:bold;font-size:.85rem;margin-top:10px;color:var(--primary);}
+        button{cursor:pointer;border:none;border-radius:10px;font-weight:bold;transition:.3s;display:flex;align-items:center;justify-content:center;gap:8px;}
+        .btn-main{background:var(--primary);color:white;padding:16px;width:100%;font-size:1rem;margin-top:10px;}
+        .btn-main:disabled{background:#ccc;cursor:not-allowed;}
+        .btn-link{background:none;color:var(--primary);font-size:.9rem;text-decoration:underline;margin-top:10px;width:100%;}
+        #dashboard{flex:1;display:flex;flex-direction:column;}
+        .header-dash{display:flex;justify-content:space-between;align-items:center;background:white;padding:10px 25px;border-bottom:1px solid #ddd;}
+        .btn-header{color:white;padding:6px 12px;font-size:.8rem;}
+        .btn-voltar{background:#6c757d;}
+        .btn-sair{background:var(--danger);}
+        .carousel-container{position:relative;flex-grow:1;display:flex;align-items:center;overflow:hidden;background:#e9ecef;}
+        .student-track{display:flex;transition:transform .4s cubic-bezier(.4,0,.2,1);width:100%;height:100%;}
+        .student-card{min-width:100%;display:flex;justify-content:center;align-items:center;padding:20px;box-sizing:border-box;}
+        .card-content{background:white;width:95%;max-width:960px;padding:20px;border-radius:20px;box-shadow:0 15px 35px rgba(0,0,0,0.1);display:flex;gap:24px;align-items:flex-start;max-height:90vh;overflow-y:auto;}
+        .photo-area{flex:0 0 190px;text-align:center;}
+        .photo-placeholder{width:160px;height:160px;border-radius:50%;background:#f0f7ff;border:4px solid var(--primary);display:flex;align-items:center;justify-content:center;font-size:40px;overflow:hidden;margin:0 auto;}
+        .photo-placeholder img{width:100%;height:100%;object-fit:cover;}
+        .btn-upload-label{margin-top:10px;display:inline-block;background:var(--primary);color:white;padding:6px 12px;border-radius:8px;font-size:.8rem;cursor:pointer;}
+        .bimestres-container{flex:1;}
+        .ocorrencias-section{background:var(--ocorrencias-bg);padding:20px;border-radius:12px;border-left:5px solid var(--ocorrencias-border);margin-bottom:20px;}
+        .ocorrencias-header{display:flex;align-items:center;gap:10px;margin-bottom:15px;font-weight:bold;color:#856404;font-size:1.1rem;}
+        .ocorrencias-count{background:var(--warning);color:#856404;padding:4px 12px;border-radius:20px;font-weight:bold;font-size:.9rem;}
+        .ocorrencias-list{max-height:120px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;}
+        .ocorrencia-item{background:white;padding:12px;border-radius:8px;border-left:4px solid var(--primary);font-size:.9rem;display:flex;align-items:center;gap:12px;}
+        .ocorrencia-grave{border-left-color:var(--danger);background:#f8d7da;}
+        .ocorrencia-leve{border-left-color:var(--success);background:#d4edda;}
+        .ocorrencia-badge{font-weight:bold;padding:2px 8px;border-radius:12px;font-size:.8rem;}
+        .badge-grave{background:#f8b2b2;color:#721c24;}
+        .badge-leve{background:#b5eab5;color:#155724;}
+        .sem-ocorrencias{text-align:center;padding:20px;color:var(--success);font-weight:bold;}
+        .tabs{display:flex;gap:8px;margin:4px 0 10px 0;flex-wrap:wrap;}
+        .tab-btn{flex:1;padding:8px;border-radius:8px;border:1px solid #ddd;background:#f8f9fa;cursor:pointer;font-size:.85rem;font-weight:bold;min-width:70px;}
+        .tab-btn.active{background:var(--primary);color:white;border-color:var(--primary);}
+        .tab-content{display:none;}
+        .tab-content.active{display:block;}
+        .toggle-item{display:flex;justify-content:space-between;align-items:center;padding:6px 12px;background:#f8f9fa;border-radius:10px;margin-bottom:4px;border:1px solid #eee;font-size:.85rem;}
+        .toggle-destaque{background:#e8f0fe;border:1px solid var(--primary);}
+        .switch{position:relative;display:inline-block;width:34px;height:18px;}
+        .switch input{opacity:0;width:0;height:0;}
+        .slider{position:absolute;cursor:pointer;top:0;left:0;right:0;bottom:0;background-color:#ccc;transition:.4s;border-radius:20px;}
+        .slider:before{position:absolute;content:"";height:12px;width:12px;left:3px;bottom:3px;background-color:white;transition:.4s;border-radius:50%;}
+        input:checked + .slider{background-color:var(--success);}
+        /* 🔴 ACL piscando */
+         @keyframes piscarACL {
+        0% { background-color: #dc3545; }
+        50% { background-color: #ff6b6b; }
+         100% { background-color: #dc3545; }
+}
+.toggle-acl input:checked + .slider {
+    animation: piscarACL 0.7s infinite !important;
+}
+
+/* 🔴 TEXTO ACL piscando + negrito (CORRIGIDO) */
+.toggle-acl .acl-label{
+    font-weight: bold;
+}
+
+@keyframes piscarTextoACL {
+    0% { color: #dc3545; }
+    50% { color: #000; }
+    100% { color: #dc3545; }
+}
+
+/* 🔴 TEXTO ACL piscando quando ativo */
+.toggle-acl input:checked {
+    animation: none;
+}
+
+.toggle-acl input:checked ~ * .acl-label,
+.toggle-acl input:checked + .slider {
+    animation: none;
+}
+
+/* 🔥 solução alternativa (forçada via classe do pai) */
+.toggle-acl:has(input:checked) .acl-label {
+    animation: piscarTextoACL 0.7s infinite;
+}
+
+        input:checked + .slider:before{transform:translateX(16px);}
+        textarea{height:60px;resize:none;font-size:.85rem;}
+        .btn-pdf{background:#5f6368;color:white;width:100%;padding:12px;margin-top:10px;}
+        .nav-arrow{position:absolute;top:25%;transform:translateY(-50%);background:var(--primary);color:white;width:50px;height:50px;border-radius:50%;z-index:2000;border:none;font-size:24px;box-shadow:0 4px 10px rgba(0,0,0,0.2);}
+        .nav-arrow:disabled{background:#ccc;cursor:not-allowed;opacity:.5;}
+        .arrow-left{left:15px;}
+        .arrow-right{right:15px;}
+        footer{background:#ffffff;border-top:1px solid #ddd;text-align:center;font-size:.75rem;color:#666;padding:6px 10px;}
+        @media (max-width:768px){.auth-container{margin:20px 10px;padding:20px 15px;border-radius:16px;}.carousel-container{padding:10px 0;}.student-card{padding:10px;}.card-content{flex-direction:column;max-width:100%;max-height:none;}.photo-area{width:100%;display:flex;flex-direction:column;align-items:center;}.photo-placeholder{width:120px;height:120px;}.header-dash{flex-direction:column;align-items:flex-start;gap:8px;}.tabs{flex-wrap:wrap;}.tab-btn{flex:1 1 48%;font-size:.8rem;padding:6px;}}
+    </style>
+</head>
+<body>
+<div id="app-root">
+    <div id="tela-login" class="auth-container">
+        <img src="imagem1.png" style="width:70px;margin-bottom:10px;">
+        <h2>CONSELHO DIGITAL 2026</h2>
+        <input type="email" id="login-email" placeholder="E-mail">
+        <input type="password" id="login-senha" placeholder="Senha">
+        <button class="btn-main" id="btn-login" onclick="acaoLogin()">🚀 ENTRAR NO SISTEMA</button>
+        <button class="btn-link" onclick="resetSenha()">❓ Esqueci a senha</button>
+        <button class="btn-link" onclick="mostrarTela('tela-cadastro')">📝 Criar nova conta</button>
+        </div>
+
+        <div id="tela-cadastro" class="auth-container hidden">
+    <h2>Criar Conta</h2>
+    <input type="email" id="cad-email" placeholder="Seu e-mail">
+    <input type="password" id="cad-senha" placeholder="Senha (mín. 6 dígitos)">
+    <button class="btn-main" onclick="acaoCriarConta()">✅ FINALIZAR CADASTRO</button>
+    <button class="btn-link" onclick="mostrarTela('tela-login')">⬅️ Voltar ao Login</button>
+</div>
+
+<div id="tela-nova-senha" class="auth-container hidden">
+    <h2>🔐 Nova Senha</h2>
+    <input type="password" id="nova-senha" placeholder="Digite a nova senha">
+    <button class="btn-main" onclick="salvarNovaSenha()">💾 SALVAR NOVA SENHA</button>
+</div>
+
+
+
+    <div id="tela-filtros" class="auth-container hidden">
+        <h3>⚙️ Iniciar Sessão</h3>
+        <label>Turno:</label>
+        <select id="sel-turno" onchange="popularTurmas()">
+            <option value="integral">Tempo Integral</option>
+            <option value="noturno">Noturno</option>
+        </select>
+        <label>Turma:</label>
+        <select id="sel-turma"></select>
+        <button class="btn-main" id="btn-abrir-diario" onclick="iniciarConselho()">📂 ABRIR DIÁRIO DE BORDO</button>
+    </div>
+
+    <div id="dashboard" class="hidden">
+    <div class="header-dash">
+        <span id="info-header" style="font-weight:bold;color:var(--primary);"></span>
+        <div style="display:flex;gap:10px;">
+            <button class="btn-header btn-voltar" onclick="mostrarTela('tela-filtros')">⬅️ VOLTAR</button>
+            <button class="btn-header btn-sair" onclick="acaoSair()">⚠️ SAIR</button>
+        </div>
+    </div>
+
+    <!-- 🔒 AVISO AQUI -->
+    <div id="aviso-leitura" style="
+        display:none;
+        background:#ffe5e5;
+        color:#a00;
+        padding:10px;
+        text-align:center;
+        font-weight:bold;
+    ">
+        🔒 Modo somente leitura — você pode apenas visualizar
+    </div>
+        <div class="carousel-container">
+            <button class="nav-arrow arrow-left" id="btn-prev" onclick="moveSlide(-1)">❮</button>
+            <div class="student-track" id="student-track"></div>
+            <button class="nav-arrow arrow-right" id="btn-next" onclick="moveSlide(1)">❯</button>
+        </div>
+    </div>
+</div>
+<footer>🎓 EEMTI DRAGÃO DO MAR - 🖥️ L.E.I. / ⚙️ By D.S.Montenegro</footer>
+
+<script>
+    const SUPABASE_CONSELHO_URL = 'https://hinaavyyhoqcdycutqte.supabase.co';
+    const SUPABASE_CONSELHO_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpbmFhdnl5aG9xY2R5Y3V0cXRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIwNTk1OTYsImV4cCI6MjA4NzYzNTU5Nn0.ZxWugRhPj8-2nf3GrolGmwgIWlteHz4r0tkonPZiBMs';
+    const _supabase = supabase.createClient(SUPABASE_CONSELHO_URL, SUPABASE_CONSELHO_KEY);
+    const emailsAutorizados = [
+  "breno.marques@prof.ce.gov.br",
+  "monte.eng@gmail.com",
+  "daniel.silva7@prof.ce.gov.br",
+  "eem.dragao.mar@gmail.com"
+];
+
+let emailUsuario = '';
+
+async function carregarUsuario(){
+  const { data } = await _supabase.auth.getUser();
+  emailUsuario = data?.user?.email || '';
+}
+
+function podeEditar(){
+  return emailsAutorizados.includes(emailUsuario);
+}
+
+// carrega usuário ao entrar
+window.addEventListener('load', async () => {
+  await carregarUsuario();
+
+  const hash = window.location.hash;
+
+  console.log("HASH:", hash);
+
+  // 🔥 DETECÇÃO MAIS FORTE
+  if(hash && hash.includes("access_token")){
+    mostrarTela('tela-nova-senha');
+  }
+});
+
+    const SUPABASE_OCORR_URL = 'https://mspucfzsdpejwnhmwwmk.supabase.co';
+    const SUPABASE_OCORR_KEY = 'sb_publishable_E6S5Xx028e1ue_4EQsj6qA_tBilAr8R';
+    const supabaseOcorrencias = supabase.createClient(SUPABASE_OCORR_URL, SUPABASE_OCORR_KEY);
+
+    const turmasDados = {
+        integral: {
+            "1º A": ["ANA BEATRIZ CABRAL DA SILVA", "ANA BEATRIZ DANTAS BERNARDO","RONNALD LOPES de OLIVEIRA","ANA BEATRIZ OLIVEIRA SERRA", "ANA CAROLYNA CARNEIRO SOUSA", "ANA LUIZA DE SOUSA LOURENCO", "ANNA JULIA RODRIGUES DE MELO", "DEBORA IOLANDA GOMES DA SILVA", "DEVIDSON RAMOS DE OLIVEIRA", "DIOGO SANTOS FERREIRA", "FERNANDO ERLANIO DE OLIVEIRA AGUIAR", "JESSICA DEBORA SILVA OLIVEIRA", "JOAO GABRIEL SOUSA RODRIGUES", "JOAO LUCAS SOUSA DA COSTA", "JORGE MIGUEL ARAUJO LOPES", "JULIA EVELLEN PAIVA DA SILVA", "KAILANY DA SILVA COSTA", "KAROLLAINY OLIVEIRA SOUSA", "KAUA ARAUJO MENDES", "LUIS GUSTAVO COSTA FERNANDES", "LUNNA DE LIMA ABREU", "MARA LIDIA FERREIRA DE FARIAS", "MARIA ALICIA CARVALHO NUNES", "MARIA CLARA DA CRUZ SILVA", "MARIA EDUARDA BERNARDO SOUZA", "MARIA ISABEL ALVES PEREIRA", "MARYA EDUARDA DOS SANTOS LOBAO", "MOISES ARCANJO FLOR FERREIRA", "RAYSSA DA SILVA RODRIGUES", "RYAN DA SILVA COSTA", "SAMUEL SANTIAGO DE LIMA", "SAMYRA MARIA CAVALCANTE CRUZ", "THALES GABRIEL FERREIRA DE LIMA", "TIAGO TAVARES SOUZA", "YANN FERREIRA SILVA COELHO", "YASMIN SILVA COUTO"],
+            "1º B": ["ALESSANDRO DOS SANTOS RODRIGUES", "ANA ESTER DA SILVA FELIX", "ANA RUTY PEREIRA DOS SANTOS", "ARIELE DE CARVALHO GONDIM BARBOSA LEMOS", "BERNARDO BATISTA LIMA", "BRENO HENRIQUE CASTRO VALENTIM", "EDUARDO SOUSA GAMA", "ESTER VIRGINIO MARIANO", "FILIPE BRAS DE PAULA", "FRANCISCO EDILSON OLIVEIRA ANDRADE", "GABRIELA RODRIGUES DOS SANTOS", "GEORGE TEODOZIO SILVA", "GUSTAVO NERY TEIXEIRA DE PAULA", "IAN DE ABREU VIANA", "JOSE MARLEY MENDES DOS SANTOS", "LARA WINY SOUSA DA SILVA", "LOUISE ANDRYA FERREIRA DE SOUSA LIMA", "LUARA KALYNE DA CONCEICAO SARAIVA", "LUDMILA LOPES EVANGELISTA", "MARCOS VINICIUS ARAUJO LIMA ALVES", "MARIA BEATRIZ TELES GUEDES DE SOUSA", "MARIA EDUARDA MARTINS DANTAS", "MARIA GABRIELA DA SILVA MACEDO ARAUJO", "MARIA MANUELA FERREIRA LIMA", "MARIA VITORIA SANTOS DE LIMA", "MAYRA ALEXANDRA DOS SANTOS CARMO", "MIGUEL ANTONIO LOPES DA CUNHA", "NATHALLY ELOAR DO SANTOS HENRIQUE DA SILVA", "PAULO LUCAS VIEIRA DOS SANTOS", "PEDRO LUAN OLIVEIRA SANTOS", "PEDRO LUCAS ARAUJO BRAUNA", "RHUAN DE BRITO RODRIGUES", "RODRIGO OLIVEIRA DA SILVA", "SAULO LUKA PESSOA TABOSA", "YAN DAVID FEITOSA RODRIGUES"],
+            "1º C": ["ALICE FIRMINO DOS SANTOS SILVEIRA", "ANA LIVIA DA CRUZ BORGES", "ANA VITORIA SOUSA DE LIMA", "LUCY HELEONORA DA COSTA GOMES", "BRIAN VALENTE DOS SANTOS", "CAIO VICTOR SALES DO NASCIMENTO", "CARLOS YUDI SILVA DO NASCIMENTO", "CECILIA BORGES OLIVEIRA", "DALILA SIMONE DOS SANTOS", "ELNATAN DOS REIS RODRIGUES", "ERICK SANTOS ARAUJO", "FABIANO SANTIAGO DOS ANJOS", "FRANCISCO MANOEL DOS ANJOS DA SILVA", "GABRIEL CASTRO DE SOUSA", "HELLEN MARIA DO NASCIMENTO BERNARDO", "ISABELE ROCHA FERREIRA", "JOAO LEVI GOMES VIEIRA", "JOAO PEDRO LIMA SOARES", "JOAO VITOR DE PAULO DO NASCIMENTO", "JOSE CAUA DOS SANTOS RODRIGUES", "JULIA NICOLY DE LIMA", "KEVEN GABRIEL DE SOUSA RIBEIRO", "LUIZ OTAVIO DA SILVA MOREIRA", "MARIA EDUARDA BEZERRA SANTOS", "MARIA EDUARDA RODRIGUES GUIMARAES", "MARIA LUIZA DA SILVA FRANCA", "MARIA VITORIA DA SILVA DO NASCIMENTO", "SAMUEL FREITAS ALVES", "SARAH KELLY FERREIRA SOUSA", "YAN MIQUEIAS OLIVEIRA ALVES", "YASMIN PESSOA DA ROCHA", "RONNALD LOPES DE OLIVEIRA", "EMANUEL ARAÚJO MANSUR", "SAMUEL DO VALE DE OLIVEIRA", "VITÓRIA NYCOLE LOPES DE OLIVEIRA", "PEDRO GABRIEL TABOSA ROSENO", "ANA KETHELLY AGUIAR DE SOUZA"],
+            "2º A": ["ANA LIVIA DOS SANTOS BARATA", "ANTONIO VINICIUS ROCHA FERREIRA", "BRYANN VICTOR PEREIRA XAVIER", "CARLA SAMANTHA DE OLIVEIRA ASSARE", "CLARISSE YASMIN DA SILVA EVARISTO", "EMANUELLE HIGINO DE SOUZA", "ENZO DOS SANTOS MONTEIRO", "ERIK DOUGLAS LIMA MARTINS",  "GUILHERMY KAUA DA SILVA FERREIRA", "IRVINA AGATA DA SILVA FRANCA", "JENYFER RAISSA DO NASCIMENTO COSTA", "JESSIANE RIBEIRO CARNEIRO", "KAUA GUILHERME CRUZ SILVA", "KELRIANE BARROS DA COSTA", "LUIZ EDUARDO LOURENCO FIGUEIRA MACEDO", "MARCOS KAYRON ALBUQUERQUE ALVES", "MARIA IONARA FERREIRA DOS SANTOS", "MARIA SARAH LOPES DE BRITO", "MAYCON DO NASCIMENTO PEREIRA", "NARA LAUANE CARNEIRO FERREIRA", "PEDRO GABRIEL MOREIRA DA COSTA", "PEDRO HENRIQUE SOUSA MARTINS DA SILVA", "PEDRO VINÍCIUS OLIVEIRA DOS ANGELOS", "RYAN BARBOSA DE SOUSA", "SUELEN CRISTINA FARIAS LEAL", "VITORIA SANTOS DE OLIVEIRA SILVA", "WELLY DE CASTRO BULHOES"],
+            "2º B": ["ANA BRUNA FELIX ACARCIO PEREIRA", "ANA LAYS DE ALMEIDA", "ANA LIVIA VASCONCELOS LOBO ROCHA", "ANA VITORIA DE SOUZA AMARAL", "CALEBE DA SILVA SANTOS", "CECILIA SILVA OLIVEIRA", "DEBORAH CARVALHO BEZERRA", "GLENDA VITORIA GOMES DE LIVIA", "GUILHERME BARBOSA LOURENCO", "JOAO PIERRY ALVES DE OLIVEIRA", "JOEL BARBOSA EVANGELISTA", "KAROLYNNE", "KERISSON ANDRADE AMORIM", "KEYLLON VITORIO DE SOUZA AMBE","LUÍS HENRIQUE ALVES DE OLIVEIRA", "LUANA FONSECA MONTEIRO", "LUCAS OLIVEIRA DE SOUZA", "MARCOS VINICIUS SILVANO BATISTA", "MARIA EDUARDA SANTANA RODRIGUES", "MARIA HELLEN SOUSA BARROS", "MIGUEL RONEY PEREIRA DUARTE", "MOYSHES GOMES DO NASCIMENTO", "NICOLAS DE FREITAS LOPES", "NYKOLAS PEREIRA RIOS", "PEDRO RIBEIRO HOLANDA", "RIHANHA FERREIRA DOS REIS", "RYANBERG FERREIRA BARBOSA DA SILVA", "VARVARA OZEROVA", "VICTOR GABRIEL LIMA DE SOUZA", "YAN DHARLLYS MARTINS DO NASCIMENTO"],
+            "2º C": ["AMANDA PEREIRA DA PENHA", "ANA JULIA FERNANDES DE SOUSA", "ANA LARA CORREIA LOPES", "ARTHUR CARLOS DE ALMEIDA MOTTA", "ARTHUR MONTENEGRO VENANCIO", "BRENDA PEREIRA LIMA", "ELLEN CRISTINA SILVA DOS SANTOS", "EZEQUIEL GOMES DE SENA", "FRANCISCA SAMILLY DA SILVA ARAUJO", "GABRIEL ARAUJO SILVA", "GABRIEL ONOFRE DE SOUSA MACIEL", "HELOARA MORAES VERCOSA", "JOSE ELIVELTON OLIVEIRA MAGALHAES", "KAUA EMERSON LIMA MENEZES", "KAYANNE RODRIGUES TEIXEIRA", "KENCIANE OLIVEIRA DE SOUSA", "MARIA ALICE RIBEIRO DA SILVA", "MARIA APARECIDA SILVA DE SOUZA", "MARIA EDUARDA CARIOLANO DE ARAUJO", "MARIA FERNANDA SILVA DOS SANTOS FELIX", "MARIA LAYANE MONTEIRO DE LIMA", "MIGUEL VASCONCELOS DINIZ", "MIRELLA DE PAULA NASCIMENTO", "PEDRO ADRIAN DA SILVA", "PEDRO ITALO MAIA SOUSA", "PEDRO LUCAS FEIJÓ", "REBECA DIOGO SILVA MONTENEGRO", "SAMYLLY RAYSSA DIAS ARAUJO", "SUZANNA RAFAELLE COSTA S. DO NASCIMENTO", "YURI ANDRADE DA MATA"],
+            "3º A": ["ADRYAN DE PAULA ANDRADE", "ALISSON COSTA DA SILVA", "ANA BEATRIZ FURTADO TAVARES", "ANA CAROLINE AIRES PEREIRA", "ARIANI DA GUIA DOS SANTOS", "BRUNO KENNEDY SOUSA SOARES", "CAMILY DE OLIVEIRA COSTA", "DANIELA CASTRO DE SOUZA", "DIOGO ADRIAN TAVARES DE LIMA", "EMANUELLE FERREIRA DE SOUSA", "EMANUELLY DE CASSIA PINTO QUEIROZ", "EMILY SOARES CUNHA GOMES", "FERNANDO ANTONIO MOTA DE SOUSA FILHO", "ISABELLA ALVES PEREIRA", "IZABELLE CARVALHO SILVA", "JEFERSON LAZANO MENDES DINIZ", "JOAO NICOLAS DO NASCIMENTO", "JOÃO PEDRO", "KAYLA VITORIA MARQUES CAMPOS", "KELTON MATEUS DE SOUSA NEVES", "LARA RAYELE BORGES GOES", "LAYS NAYRA GOMES FERREIRA", "LETICIA BARBOSA TEIXEIRA", "LIAN DE SOUSA FERREIRA", "LUIDY RAYAN PEREIRA DA SILVA", "LUIS DANIEL ALMEIDA DA SILVA", "LUIZ GUSTAVO SANTANA DA MATA", "MARIA FERNANDA SILVA SOUSA", "PEDRO ERICK BEZERRA DE LIMA", "PEDRO LUCAS DA SILVA GOMES", "PEDRO LUCAS LOPES MATIAS", "SILAS DOS SANTOS ALMEIDA", "YARLEI FERREIRA LOBAO", "YASMIM LOURENCO DE FREITAS"],
+            "3º B": ["ANA ALICE RODRIGUES DA SILVA", "ANA CLARA DOS SANTOS DE PAULA", "ANA KARINE ALBERTO SILVA", "ANA LUIZA ALVES DE OLIVEIRA", "ANDRE HENRIQUE DE SOUZA CAMPOS", "ANGELA PATRICIA OLIVEIRA FRANCA LIMA", "ANTONIA VANESSA LIMA DA MATA", "CARLOS MISAEL DA SILVA FELIX", "EDUARDA GABRIELE FERREIRA DOS SANTOS", "FLÁVIO NOGUEIRA FILHO", "FRANCISCO HUGO DA SILVA ARAUJO", "FRANCISCO RENAN DE SOUZA RODRIGUES", "GABRIEL VITOR ABREU MORAES", "GUDSON MACEDO SANTANA", "ISAAC ASSUNCAO RODRIGUES DE MATOS", "JOAO MANOEL DIONIZIO DA SILVA", "JOAO VICTOR SOUSA DA COSTA", "JOSE ADRIEL DE SOUSA Bernardo", "JOSE RENAN ARAUJO LIMA CASTRO", "KATHERINE LEITE BRAGA", "KERLLON PAZ DA SILVA", "LARA GABRIELLE RODRIGUES MORAIS", "LETICIA HONORATO ALVES", "LUCAS DOS SANTOS MATOKANOVIC", "MARCIO MARLEY RIBEIRO DA SILVA", "MARCUS YUAN PACHECO DE SOUSA", "MARIA CLARA CALDAS RODRIGUES", "MARIA EVELYN DA SILVA SABINO", "ROMAN DUBOVIK", "RYAN PEREIRA DE SOUSA", "RYANNA FERREIRA RODRIGUES", "SAMUEL MOREIRA FERREIRA", "VERONICA DANIELA NUNEZ TORRES", "WESLEI FERREIRA GOIS", "YORRANA DA SILVA GONÇALVES"]
+        },
+        noturno: {
+            "1º D": ["ANA PAULA FERREIRA DA SILVA", "ANA LARA LOPES POLICARPO", "CARLOS EDUARDO S. NASCIMENTO", "CARLOS ICARO SOUSA BARRETO", "CARMEN LÚCIA DO NASCIMENTO SANTOS", "CYNTHIA BIANCA RIBEIRO", "DHEIMISON LEANDRO", "DIOGO VINICIUS RIBEIRO DE SOUSA", "EDUARDO DA SILVA SILVEIRA", "FRANCISCA SILVANEIDE DA SILVA", "JOSE CAUA DOS SANTOS RODRIGUES", "LAURA CLARIANE LIMA DUARTE", "LUAN RODRIGUES DE MORAIS", "MARIA FREITAS DE ALMEIDA", "MARIA GABRIELA VERAS FERREIRA", "MARIA VANUSIA COELHO", "NATANAEL LOBAO DA SILVA", "NATIELE GOMES COSTA", "RAYSSA SOUSA COSTA", "ROSA MARIA DA SILVA", "SAMUEL COSTA REBOUCAS", "SIMONE ALVES DE SOUSA", "THAYSSA STHER FELIX REBOUÇAS", "WILCKY SANTOS PEREIRA", "YOHANA CORTEZ DE AZEVEDO", "YURI TEIXEIRA DA SILVA", "Joyse kely", "Marina Rodrigues"],
+            "2º D": ["ARIEL LUCAS CARVALHO", "ARIELY LETÍCIA LIMA OLIVEIRA", "CARLOS RYAN OLIVEIRA FERREIRA", "DOUGLAS MARCELO FERNANDES OLIVEIRA DE MELO", "ELOIZA ZAQUEU DA SILVA SANTOS", "EMILY AZEVEDO DOS SANTOS", "FAGNER LUCENA DA SILVA", "FRANCISCO DAVI RIBEIRO FREITAS", "FRANCISCO ELIVERTON ALVES DIAS", "GABRIEL HENRIQUE FREITAS DE CARVALHO", "JOAO MARCOS NOGUEIRA PEREIRA", "JOSE ROMULO FACUNDE DA SILVA", "JULYAM NAYRIS GUEDES ALBUQUERQUE", "KATIANE DE SOUZA JULIAO GOMES", "KAUA CUNHA MATIAS", "LEANDRO RAQUEL GOMES", "LUANA PRISCILA OLIVEIRA", "LUCAS HONORIO DE SOUSA", "MARIA SUYANE BARBOSA GOMES", "MELISSA DOS SANTOS VITURINO", "PEDRO YTALLO ALVES DE ARAUJO MOTA", "RAY PEREIRA ROCHA NOGUEIRA", "RAYANE BERNARDO DA SILVA SOARES", "RIAN DE LIMA NASCIMENTO", "SARA ROCHA DE SENA", "STEPHANY REIS FONSECA", "TAINARA DE SOUZA", "NICOLE KETLIN DE OLIVEIRA", "ANA LUIZA LOMBARDI MESQUITA", "GABRIEL FREITAS DOS SANTOS", "LUZIA KETTILY", "FRANCISCO WEVERTON DOS SANTOS"],
+            "3º C": ["ANA LUISA PEREIRA DOS SANTOS", "ARYANE SILVA DA GUIA", "EDUARDO DA SILVA MACEDO ARAUJO", "ERIANA KEZIA NASCIMENTO RODRIGUES", "FRANCISCA ELLEN CASTRO DOS SANTOS", "GABRIELEM MARIA LIMA DE CASTRO", "IZABELE MARTINS DE SOUSA", "JOAO MARCELO CESARIO DA SILVA", "JONATHAN VITOR DA SILVA ALVES", "KAUA CARDOSO DE OLIVEIRA", "KAUA KEVEN AZEVEDO DA SILVA", "LUIZ DAVI CRUZ DA ROCHA", "MARIA JAMILE DE SOUSA PEREIRA", "MARIA REBECA SILVA DA CRUZ", "MARIANA NASCIMENTO DA SILVA", "NICOLAS ARAUJE DE FREITAS", "SAMUEL RODRIGUES GOMES", "SARA DOS SANTOS HAYASHI", "VITORIA CAROLINE MORAIS DE LIMA", "WESLEY SANTANA FIRMINO", "ISRAEL LUIS DE PAULA ROCHA", "DANILO DOS SANTOS PEREIRA", "LUCAS DIOGO", "GABRIEL VALENTIM", "Adalberto", "Paulo Renan"]
+        }
+    };
+         
+        const pdtPorTurma = {
+    "1º A": "Priscila",
+    "1º B": "Daniel",
+    "1º C": "Felipe",
+    "2º A": "Narda",
+    "2º B": "Diego",
+    "2º C": "Rayanne",
+    "3º A": "Lucas Gondin",
+    "3º B": "Alice_EF",
+    "1º D": "Rayanne",
+    "2º D": "Taynalio",
+    "3º C": "Alice_EF"
+};
+
+
+
+    let currentIndex = 0, totalAlunos = 0;
+
+    _supabase
+  .channel('realtime-conselho')
+  .on(
+    'postgres_changes',
+    {
+      event: '*',
+      schema: 'public',
+      table: 'conselho_classe'
+    },
+    async (payload) => {
+
+      console.log("Mudança recebida:", payload);
+
+      const registro = payload.new;
+      if(!registro) return;
+
+      const nome = registro.nome;
+
+      atualizarAluno(nome);
+    }
+  )
+  .subscribe();
+
+    function mostrarTela(id) {
+        document.querySelectorAll('.auth-container, #dashboard').forEach(c => c.classList.add('hidden'));
+        document.getElementById(id).classList.remove('hidden');
+    }
+
+    function popularTurmas() {
+        const turno = document.getElementById('sel-turno').value;
+        const selTurma = document.getElementById('sel-turma');
+        selTurma.innerHTML = '';
+        Object.keys(turmasDados[turno]).forEach(t => {
+            selTurma.innerHTML += `<option value="${t}">${t}</option>`;
+        });
+    }
+
+    async function acaoLogin() {
+    const email = document.getElementById('login-email').value.trim();
+    const senha = document.getElementById('login-senha').value;
+    const btn = document.getElementById('btn-login');
+    
+    if(!email || !senha) return alert("Preencha todos os campos!");
+    
+    btn.innerText = "🔄 AUTENTICANDO...";
+    btn.disabled = true;
+    
+    try {
+        const { data, error } = await _supabase.auth.signInWithPassword({ 
+            email: email.toLowerCase(), 
+            password: senha 
+        });
+        
+        if(error) {
+            alert("Erro: " + (error.message.includes("Invalid") ? "E-mail ou senha incorretos" : error.message));
+        } else {
+
+            // 🔥 GARANTE EMAIL CORRETO
+            emailUsuario = data.user.email;
+
+            mostrarTela('tela-filtros');
+            popularTurmas();
+        }
+    } catch(e) {
+        alert("Erro de conexão");
+    } finally {
+        btn.innerText = "🚀 ENTRAR NO SISTEMA";
+        btn.disabled = false;
+    }
+}
+
+    async function buscarOcorrencias(nomeAluno) {
+        try {
+            const { data } = await supabaseOcorrencias
+                .from('ocorrencias')
+                .select('*')
+                .eq('aluno', nomeAluno)
+                .order('data_hora', { ascending: false })
+                .limit(5);
+            return data || [];
+        } catch(e) { return []; }
+    }
+
+async function sync(nome, bimestre, campo, valor) {
+
+    // 🔒 BLOQUEIO FINAL (OBRIGATÓRIO)
+    if(!podeEditar()){
+        alert("EEMTI DRAGÃO DO MAR\n\nSomente e-mails da gestão podem alterar dados!");
+        return;
+    }
+
+    const turma = document.getElementById('sel-turma').value;
+       
+    await _supabase.from('conselho_classe').upsert(
+        { nome, turma, bimestre, [campo]: valor },
+        { onConflict: 'nome,turma,bimestre' }
+    );
+}
+
+    async function iniciarConselho() {
+const podeEditarUsuario = podeEditar();
+const btn = document.getElementById("btn-abrir-diario");
+if(btn){
+btn.innerText="⏳ CARREGANDO DADOS... AGUARDE ALGUNS INSTANTES";
+btn.style.background="#f39c12";
+btn.disabled=true;
+}
+
+        
+         const turno = document.getElementById('sel-turno').value;
+         const turma = document.getElementById('sel-turma').value;
+         const pdtTurma = pdtPorTurma[turma] || "Não definido";
+        const nomes = turmasDados[turno][turma];
+        totalAlunos = nomes.length;
+        currentIndex = 0;
+
+        document.getElementById('info-header').innerText = `🏫 ${turma} | 🗓️ Relatório Anual 2026`;
+        const track = document.getElementById('student-track');
+        track.innerHTML = '🔄 Carregando dados + ocorrências...';
+
+        const { data: todosRegistros } = await _supabase.from('conselho_classe').select('*').eq('turma', turma);
+
+        let html = '';
+
+// 🔥 BUSCA TODAS AS OCORRÊNCIAS UMA ÚNICA VEZ
+const { data: todasOcorrencias } = await supabaseOcorrencias
+  .from('ocorrencias')
+  .select('*')
+  .in('aluno', nomes);
+
+for(const nome of nomes) {
+
+    // 🔥 FILTRA LOCALMENTE (RÁPIDO)
+    const ocorrencias = (todasOcorrencias || [])
+        .filter(o => o.aluno === nome)
+        .slice(0, 5);
+
+    const totalOcorr = ocorrencias.length;
+    const graves = ocorrencias.filter(o => o.gravidade === 'Grave').length;
+
+    let htmlOcorrencias = totalOcorr > 0 ? `
+        <div class="ocorrencias-section">
+            <div class="ocorrencias-header">
+                <span>⚠️</span>
+                <span>${totalOcorr} Ocorrência${totalOcorr>1?'s':''}</span>
+                <span class="ocorrencias-count">${graves} Grave${graves>1?'s':''}</span>
+            </div>
+            <div class="ocorrencias-list">
+                ${ocorrencias.slice(0,3).map(oc => {
+                    const classe = oc.gravidade === 'Grave' ? 'ocorrencia-grave' : 'ocorrencia-leve';
+                    const badge = oc.gravidade === 'Grave' ? 'badge-grave' : 'badge-leve';
+                    const data = oc.data_hora ? oc.data_hora.split(' às ')[0] : '---';
+                    return `
+                        <div class="ocorrencia-item ${classe}">
+                            <span class="ocorrencia-badge ${badge}">
+                                ${oc.gravidade === 'Grave' ? '🔴 GRAVE' : '🟢 LEVE'}
+                            </span>
+                            <span style="font-weight:500;">${data}</span>
+                            <span style="flex:1;">${oc.tipos_selecionados || '---'}</span>
+                        </div>`;
+                }).join('')}
+            </div>
+        </div>` : `
+        <div class="ocorrencias-section">
+            <div class="sem-ocorrencias">✅ Sem registros de indisciplina</div>
+        </div>`;
+
+            const registrosAluno = (todosRegistros || []).filter(r => r.nome === nome);
+            const temACL = registrosAluno.some(r => r.acl === true);
+            const dadosPorBim = {"1º":{},"2º":{},"3º":{},"4º":{}};
+            registrosAluno.forEach(r => { if(dadosPorBim[r.bimestre]) dadosPorBim[r.bimestre] = r; });
+            const fUrl = registrosAluno.find(r => r.foto_url)?.foto_url || '';
+            const idSeguro = nome
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "")
+  .replace(/\s/g, "")
+  .replace(/[^a-zA-Z0-9]/g, "");
+
+            let bimestresHTML = '';
+            ["1º","2º","3º","4º"].forEach((bim, idx) => {
+                const db = dadosPorBim[bim] || {};
+                bimestresHTML += `
+    <div id="tab-${idSeguro}-${bim}" class="tab-content ${idx===0?'active':''}">
+
+        <div class="toggle-item">
+            <span>⚠️ Infrequente</span>
+            <label class="switch">
+                <input type="checkbox"
+                data-campo="infrequente"
+                onclick="return validarEdicao(event) && sync('${nome}','${bim}','infrequente',this.checked)"
+                ${db.infrequente?'checked':''}>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-item">
+            <span>📉 Baixa Participação</span>
+            <label class="switch">
+                <input type="checkbox"
+                data-campo="participacao"
+                onclick="return validarEdicao(event) && sync('${nome}','${bim}','participacao',this.checked)"
+                ${db.participacao?'checked':''}>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-item">
+            <span>📚 Sem Atividades</span>
+            <label class="switch">
+                <input type="checkbox"
+                data-campo="atividades"
+                onclick="return validarEdicao(event) && sync('${nome}','${bim}','atividades',this.checked)"
+                ${db.atividades?'checked':''}>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-item">
+            <span>🚫 Indisciplina</span>
+            <label class="switch">
+                <input type="checkbox"
+                data-campo="disciplina"
+                onclick="return validarEdicao(event) && sync('${nome}','${bim}','disciplina',this.checked)"
+                ${db.disciplina?'checked':''}>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-item toggle-destaque">
+            <span>📞 Contato PDT</span>
+            <label class="switch">
+                <input type="checkbox"
+                data-campo="pdt_contato"
+                onclick="return validarEdicao(event) && sync('${nome}','${bim}','pdt_contato',this.checked)"
+                ${db.pdt_contato?'checked':''}>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <div class="toggle-item toggle-destaque">
+            <span>👪 Contato Família</span>
+            <label class="switch">
+                <input type="checkbox"
+                data-campo="familia_contato"
+                onclick="return validarEdicao(event) && sync('${nome}','${bim}','familia_contato',this.checked)"
+                ${db.familia_contato?'checked':''}>
+                <span class="slider"></span>
+            </label>
+        </div>
+
+        <label>📝 Observação Pedagógica (${bim}):</label>
+        <textarea onclick="return validarEdicao(event)" onblur="sync('${nome}','${bim}','obs',this.value)">${db.obs || ''}</textarea>
+
+        <label>🎯 Encaminhamento Final (${bim}):</label>
+        <textarea onclick="return validarEdicao(event)" onblur="sync('${nome}','${bim}','feedback',this.value)">${db.feedback || ''}</textarea>
+
+    </div>`;
+            });
+
+            html += `
+            <div class="student-card">
+                <div class="card-content">
+                    <div class="photo-area">
+                        <div class="photo-placeholder" id="img-${idSeguro}">${fUrl ? `<img src="${fUrl}" crossorigin="anonymous">` : '👤'}</div>
+                        <label class="btn-upload-label">📷 Atualizar Foto<input type="file" class="hidden" accept="image/*" onchange="uploadFoto('${nome}', this)"></label>
+                    <!-- 🔴 ACL -->
+<div class="toggle-item toggle-acl" style="margin-top:10px;">
+    
+    <span class="acl-label">ACL</span>
+
+    <label class="switch">
+        <input type="checkbox"
+        id="acl-${idSeguro}"
+        ${temACL ? 'checked' : ''}
+        onchange="toggleACLGlobal('${nome}', this.checked)">
+        <span class="slider"></span>
+    </label>
+
+</div>
+                         
+
+<div class="toggle-item" style="margin-top:5px;">
+    <span>👨‍🏫 PDT</span>
+    <span style="font-weight:bold;">${pdtTurma}</span>
+</div>
+
+                    </div>
+                    <div class="bimestres-container">
+                        <h3 style="margin:0 0 5px 0;">${nome}</h3>
+                        ${htmlOcorrencias}
+                        <div class="tabs">
+                            <button class="tab-btn active" onclick="trocarAba('${idSeguro}','1º', event)">1º Bim</button>
+                            <button class="tab-btn" onclick="trocarAba('${idSeguro}','2º', event)">2º Bim</button>
+                            <button class="tab-btn" onclick="trocarAba('${idSeguro}','3º', event)">3º Bim</button>
+                            <button class="tab-btn" onclick="trocarAba('${idSeguro}','4º', event)">4º Bim</button>
+                        </div>
+                        ${bimestresHTML}
+                        <button class="btn-pdf" onclick="gerarPdfAnual('${nome}')">📥 BAIXAR RELATÓRIO ANUAL</button>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        track.innerHTML = html;
+
+
+
+if(btn){
+btn.innerText="📂 ABRIR DIÁRIO DE BORDO";
+btn.style.background="";
+btn.disabled=false;
+}
+
+        mostrarTela('dashboard');
+        const aviso = document.getElementById('aviso-leitura');
+
+if(aviso){
+  if(!podeEditar()){
+    aviso.style.display = 'block';
+  }else{
+    aviso.style.display = 'none';
+  }
+}
+        moveSlide(0);
+    }
+
+    function trocarAba(idSeguro, bim, ev) {
+        ["1º","2º","3º","4º"].forEach(b => {
+            const el = document.getElementById(`tab-${idSeguro}-${b}`);
+            if(el) el.classList.remove('active');
+        });
+        document.getElementById(`tab-${idSeguro}-${bim}`).classList.add('active');
+        const btns = ev.currentTarget.parentElement.querySelectorAll('.tab-btn');
+        btns.forEach(b => b.classList.remove('active'));
+        ev.currentTarget.classList.add('active');
+    }
+
+    function moveSlide(dir) {
+        currentIndex = Math.max(0, Math.min(totalAlunos - 1, currentIndex + dir));
+        document.getElementById('student-track').style.transform = `translateX(-${currentIndex * 100}%)`;
+        document.getElementById('btn-prev').disabled = (currentIndex === 0);
+        document.getElementById('btn-next').disabled = (currentIndex === totalAlunos - 1);
+    }
+
+async function uploadFoto(nome, input) {
+    if(!podeEditar()){
+  alert("EEMTI DRAGÃO DO MAR\n\nSomente e-mails da gestão tem credenciais para inserir, alterar, remover dados!\n\nSeu login não permite fazer alterações nessa plataforma, apenas visualizar!");
+  return;
+}
+    const file = input.files[0];
+    if(!file) return;
+
+    const idSeguro = nome
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s/g, "")
+        .replace(/[^a-zA-Z0-9]/g, "");
+
+    const path = `fotos/${idSeguro}_${Date.now()}.png`;
+
+    const { error } = await _supabase.storage
+        .from('fotos-alunos')
+        .upload(path, file);
+
+    if(error){
+        alert("Erro: " + error.message);
+        return;
+    }
+
+    const { data } = _supabase.storage
+        .from('fotos-alunos')
+        .getPublicUrl(path);
+
+    const url = data.publicUrl;
+
+    // 🔥 salva no banco
+  await _supabase
+  .from('conselho_classe')
+  await _supabase
+  .from('conselho_classe')
+  .upsert(
+    {
+      nome: nome,
+      turma: document.getElementById('sel-turma').value,
+      bimestre: 'foto', // 👈 chave técnica
+      foto_url: url
+    },
+    { onConflict: 'nome,turma,bimestre' }
+  );
+     
+    const el = input.closest('.photo-area').querySelector('.photo-placeholder');
+
+console.log("ID:", `img-${idSeguro}`);
+console.log("Elemento encontrado:", el);
+
+if(!el){
+  alert("ERRO: elemento da imagem NÃO encontrado");
+  return;
+}
+
+el.innerHTML = `
+  <img src="${url}" 
+       style="width:150px;border:3px solid red" 
+       onerror="alert('erro ao carregar imagem')"
+  >
+`;
+
+}
+
+  async function gerarPdfAnual(nome){
+
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF();
+
+const turma = document.getElementById('sel-turma').value;
+
+const { data: regs } = await _supabase
+.from('conselho_classe')
+.select('*')
+.match({ nome, turma });
+
+const ocorrencias = await buscarOcorrencias(nome);
+
+const bool = v => v ? "SIM" : "NÃO";
+
+/* CABEÇALHO */
+
+doc.setFillColor(26,115,232);
+doc.rect(0,0,210,20,"F");
+
+doc.setTextColor(255,255,255);
+doc.setFontSize(16);
+doc.setFont("helvetica","bold");
+doc.text("EEMTI DRAGÃO DO MAR",105,12,{align:"center"});
+
+doc.setFontSize(11);
+doc.text("Relatório do Conselho de Classe - 2026",105,18,{align:"center"});
+
+doc.setTextColor(0,0,0);
+
+/* DATA */
+
+const dataAtual = new Date().toLocaleDateString("pt-BR");
+doc.setFontSize(10);
+doc.text(`Emitido em: ${dataAtual}`,150,28);
+
+/* FOTO DO ALUNO */
+
+let foto = regs?.find(r=>r.foto_url)?.foto_url;
+
+if(foto){
+
+try{
+
+const img = await fetch(foto);
+const blob = await img.blob();
+
+const reader = new FileReader();
+
+await new Promise(resolve=>{
+reader.onloadend = function(){
+doc.addImage(reader.result,"JPEG",20,30,25,25);
+resolve();
+}
+reader.readAsDataURL(blob);
+});
+
+}catch(e){}
+
+}
+
+/* IDENTIFICAÇÃO */
+
+doc.setFontSize(11);
+doc.setFont("helvetica","bold");
+
+doc.text(`Aluno: ${nome}`,55,38);
+
+const pdtTurma = pdtPorTurma[turma] || "Não definido";
+const temACL = regs?.some(r => r.acl === true);
+
+doc.text(`Turma: ${turma}`,55,45);
+doc.text(`PDT: ${pdtTurma}`,55,52);
+doc.text(`ACL: ${temACL ? "SIM" : "NÃO"}`,55,59);
+
+let startY = 75;
+
+/* BIMESTRES */
+
+["1º","2º","3º","4º"].forEach(b => {
+
+const d = (regs || []).find(r => r.bimestre === b) || {};
+
+doc.setFont("helvetica","bold");
+doc.setFontSize(13);
+
+doc.text(`${b} BIMESTRE`,105,startY,{align:"center"});
+
+startY += 5;
+
+doc.autoTable({
+
+startY: startY,
+
+head: [["Indicador","Registro"]],
+
+body: [
+
+["Infrequente", bool(d.infrequente)],
+["Baixa Participação", bool(d.participacao)],
+["Sem Atividades", bool(d.atividades)],
+["Indisciplina", bool(d.disciplina)],
+["Contato PDT", bool(d.pdt_contato)],
+["Contato Família", bool(d.familia_contato)]
+
+],
+
+theme:"grid",
+
+headStyles:{
+fillColor:[26,115,232],
+halign:"center"
+},
+
+styles:{
+fontSize:10
+}
+
+});
+
+startY = doc.lastAutoTable.finalY + 5;
+
+doc.setFont("helvetica","bold");
+doc.text("Observação Pedagógica:",20,startY);
+
+startY += 5;
+
+doc.setFont("helvetica","normal");
+
+const obs = doc.splitTextToSize(d.obs || "Não registrada",170);
+
+doc.text(obs,20,startY);
+
+startY += obs.length * 6 + 5;
+
+doc.setFont("helvetica","bold");
+doc.text("Encaminhamento Final:",20,startY);
+
+startY += 5;
+
+doc.setFont("helvetica","normal");
+
+const enc = doc.splitTextToSize(d.feedback || "Não registrado",170);
+
+doc.text(enc,20,startY);
+
+startY += enc.length * 6 + 10;
+
+if(startY > 250){
+
+doc.addPage();
+
+startY = 20;
+
+}
+
+});
+
+/* OCORRÊNCIAS */
+
+doc.addPage();
+
+doc.setFont("helvetica","bold");
+doc.setFontSize(14);
+
+doc.text("Registro de Ocorrências",105,20,{align:"center"});
+
+const ocorrRows = ocorrencias.length
+? ocorrencias.map(o => [
+
+o.data_hora ? o.data_hora.split(" às ")[0] : "---",
+o.gravidade || "---",
+o.tipos_selecionados || "---"
+
+])
+: [["---","---","Nenhuma ocorrência registrada"]];
+
+doc.autoTable({
+
+startY:30,
+
+head:[["Data","Gravidade","Descrição"]],
+
+body:ocorrRows,
+
+theme:"grid",
+
+headStyles:{
+fillColor:[255,193,7],
+textColor:[0,0,0]
+},
+
+styles:{
+fontSize:10
+}
+
+});
+
+/* RODAPÉ */
+
+const pages = doc.getNumberOfPages();
+
+for(let i=1;i<=pages;i++){
+
+doc.setPage(i);
+
+doc.setFontSize(9);
+
+doc.text(
+"EEMTI Dragão do Mar – Sistema Digital de Conselho de Classe",
+105,
+290,
+{align:"center"}
+);
+
+doc.text(
+`Página ${i} de ${pages}`,
+190,
+290,
+{align:"right"}
+);
+
+}
+
+doc.save(`Relatorio_Conselho_${nome}.pdf`);
+
+}
+
+async function resetSenha(){
+  const email = prompt("Digite seu e-mail para recuperar a senha:");
+  if(!email) return;
+
+  const { error } = await _supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin
+  });
+
+  if(error){
+    alert("Erro: " + error.message);
+  } else {
+    alert("Verifique seu e-mail para redefinir a senha.");
+  }
+}
+
+function acaoSair() { location.reload(); }
+function validarEdicao(e){
+  if(!podeEditar()){
+    e.preventDefault();
+    alert("EEMTI DRAGÃO DO MAR\n\nSomente e-mails da gestão podem alterar dados!");
+    return false;
+  }
+  return true;
+}
+async function salvarNovaSenha(){
+  const novaSenha = document.getElementById('nova-senha').value;
+
+  if(novaSenha.length < 6){
+    alert("A senha deve ter no mínimo 6 caracteres!");
+    return;
+  }
+
+  const { error } = await _supabase.auth.updateUser({
+    password: novaSenha
+  });
+
+  if(error){
+    alert("Erro: " + error.message);
+  } else {
+    alert("Senha atualizada com sucesso!");
+    mostrarTela('tela-login');
+  }
+}
+async function acaoCriarConta(){
+  const email = document.getElementById('cad-email').value.trim();
+  const senha = document.getElementById('cad-senha').value;
+
+  if(!email || !senha){
+    alert("Preencha todos os campos!");
+    return;
+  }
+
+  if(senha.length < 6){
+    alert("A senha deve ter no mínimo 6 caracteres!");
+    return;
+  }
+
+  try{
+    const { data, error } = await _supabase.auth.signUp({
+      email: email.toLowerCase(),
+      password: senha
+    });
+
+    if(error){
+      alert("Erro: " + error.message);
+    } else {
+      alert("Cadastro realizado com sucesso! Verifique seu e-mail.");
+      mostrarTela('tela-login');
+    }
+
+  } catch(e){
+    alert("Erro de conexão");
+  }
+}
+
+ async function toggleACLGlobal(nome, valor){
+    const turma = document.getElementById('sel-turma').value;
+    const bimestres = ["1º","2º","3º","4º"];
+
+    for(const bim of bimestres){
+        await _supabase.from('conselho_classe').upsert(
+            { nome, turma, bimestre: bim, acl: valor },
+            { onConflict: 'nome,turma,bimestre' }
+        );
+    }
+}
+
+
+// 🔥 ATUALIZAÇÃO EM TEMPO REAL (ALUNO ESPECÍFICO)
+async function atualizarAluno(nome){
+
+  const turmaEl = document.getElementById('sel-turma');
+  if(!turmaEl) return;
+
+  const turma = turmaEl.value;
+
+  const { data: registros } = await _supabase
+    .from('conselho_classe')
+    .select('*')
+    .eq('nome', nome)
+    .eq('turma', turma);
+
+  if(!registros) return;
+
+  ["1º","2º","3º","4º"].forEach(bim => {
+
+    const db = registros.find(r => r.bimestre === bim) || {};
+
+    const idSeguro = nome
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s/g, "")
+      .replace(/[^a-zA-Z0-9]/g, "");
+
+    const container = document.getElementById(`tab-${idSeguro}-${bim}`);
+    if(!container) return;
+
+    // CHECKBOXES
+    const inputs = container.querySelectorAll("input[type='checkbox']");
+    
+   inputs.forEach(input => {
+  const campo = input.dataset.campo;
+
+  if(campo && db[campo] !== undefined){
+    input.checked = db[campo];
+  }
+});
+
+    // TEXTAREAS
+    const textareas = container.querySelectorAll("textarea");
+
+    if(textareas[0]) textareas[0].value = db.obs || '';
+    if(textareas[1]) textareas[1].value = db.feedback || '';
+
+  });
+
+  console.log("Aluno atualizado:", nome);
+}
+
+
+</script>
+</body>
